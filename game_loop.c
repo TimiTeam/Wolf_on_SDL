@@ -1,6 +1,6 @@
 #include "head.h"
 
-void 		find_free_place(t_sdl *s, t_vec *pos)
+void 		find_free_place(t_game *s, t_vec *pos)
 {
 	int 	i;
 	int 	j;
@@ -13,8 +13,8 @@ void 		find_free_place(t_sdl *s, t_vec *pos)
 		{
 			if (s->w_map[i][j] == 0 )
 			{
-				pos->x = i;
-				pos->y = j;
+				pos->x = i + 0.2;
+				pos->y = j + 0.2;
 				return ;
 			}
 			j++;
@@ -43,8 +43,6 @@ void 		show_map(int **map, int size, int *rows_size)
 	}
 }
 
-FILE			*fp;
-
 int				copy_surf(SDL_Surface *dst, SDL_Surface *src, t_point to, t_point from)
 {
 	SDL_Rect	d;
@@ -64,7 +62,6 @@ int				copy_surf(SDL_Surface *dst, SDL_Surface *src, t_point to, t_point from)
 
 void 			draw_strip_of_wall(int x, t_sdl *s, t_game *g, t_player *p)
 {
-	t_color		col;
 	int			num_tex;
 	double		wall_x;
 	int			tex_x;
@@ -72,9 +69,6 @@ void 			draw_strip_of_wall(int x, t_sdl *s, t_game *g, t_player *p)
 	int			y;
 	int			d;
 	SDL_Surface *sur;
-	void		*data;
-	void		*dst;
-	Uint16 		color;
 	int			start;
 	int			end;
 	
@@ -85,7 +79,7 @@ void 			draw_strip_of_wall(int x, t_sdl *s, t_game *g, t_player *p)
 	if (end >= s->win_size.y)
 		end = s->win_size.y - 1;
 
-	num_tex = s->w_map[g->m.y][g->m.x] - 1;
+	num_tex = g->w_map[g->m.y][g->m.x] - 1;
 //	num_tex = num_tex >= COUNT_TEXT ? COUNT_TEXT - 2 : num_tex;
 
 	if (!g->side)
@@ -106,9 +100,6 @@ void 			draw_strip_of_wall(int x, t_sdl *s, t_game *g, t_player *p)
 	{
 		d = y * 256 - s->win_size.y * 128 + g->wall_size * 128;
 		tex_y = ((d * sur->h) / g->wall_size) / 256;
-		data = sur->pixels;
-		dst = s->surf->pixels;
-		color = (Uint16)data + tex_x + tex_y * sur->h;
 		t_point to;
 		t_point	from;
 		to.x = x;
@@ -138,7 +129,7 @@ void			calculate_strip_wall(t_player *p, t_game *game)
 			game->m.y += game->step.y;
 			game->side = 1;
 		}
-		if (p->map[game->m.y][game->m.x] > 0)
+		if (game->w_map[game->m.y][game->m.x] > 0)
 			break ;
 	}
 	if (game->side)
@@ -147,8 +138,6 @@ void			calculate_strip_wall(t_player *p, t_game *game)
 		game->wall_dist = (game->m.x - p->pos.x + (double)(1 - game->step.x) / 2) / p->ray.x;
 	if (game->wall_dist <= 0)
 		game->wall_dist = 1.0;
-//	fprintf(fp,"distance to side x = %f, y = %f; wall on map in x = %d, y = %d,\n \t Distance from player to Wall is %f",
-//			game->side_dist.x, game->side_dist.y, game->m.x, game->m.y, game->wall_dist);
 }
 
 void			calculate_side_dist(t_player *player, t_game *game)
@@ -173,7 +162,6 @@ void			calculate_side_dist(t_player *player, t_game *game)
 		game->step.y = 1;
 		game->side_dist.y = (game->m.y + 1.0 - player->pos.y) * game->delta_dist.y;
 	}
-//	fprintf(fp, "step x = %d, y = %d; distance to side x = %f, y = %f\n",game->step.x, game->step.y, game->side_dist.x, game->side_dist.y);
 }
 
 void 			build_walls(t_sdl *sdl, t_player *player, t_game *game)
@@ -184,8 +172,6 @@ void 			build_walls(t_sdl *sdl, t_player *player, t_game *game)
 	int			x;
 
 	x = 0;
-//	if((fp = fopen("calc_value.txt", "w")))
-//		ft_putendl("\t\t*** START WRITING IN FILE ***");
 	while (x < sdl->win_size.x)
 	{
 		camera = x * 2 / (double)sdl->win_size.x - 1;
@@ -195,16 +181,13 @@ void 			build_walls(t_sdl *sdl, t_player *player, t_game *game)
 		game->m.y = (int)player->pos.y;
 		game->delta_dist.x = fabs(1 / player->ray.x);
 		game->delta_dist.y = fabs(1 / player->ray.y);
-//		fprintf(fp,"\n\t\t\t--Column #%d--\n\ncamera = %f; ray x = %f, y = %f; delta_dist x = %f, y = %f\n", x, camera, player->ray.x, player->ray.y, game->delta_dist.x, game->delta_dist.y);
 		calculate_side_dist(player, game);
 		calculate_strip_wall(player, game);
 		game->wall_size = (int)(sdl->win_size.y / game->wall_dist);
 		game->half_wall_size = game->wall_size / 2;
-//		fprintf(fp, ", and wall size is %d\n", strip_size);
 		draw_strip_of_wall(x, sdl, game, player);
 		x++;
 	}
-//	ft_putendl("\t\t*** END ***");
 }
 
 void 			rotate_player(t_player *p, double rotate)
@@ -226,28 +209,25 @@ void 			rotate_player(t_player *p, double rotate)
 
 void 			print_info(t_player *p)
 {
-	printf("\t\t** INFO **\nposition x = %f, y = %f;\ndirection x = %f, y = %f;"
+	printf("\t\t** INFO **\nposition x = %f, y = %f;\ndirection x = %f, y = %f;"    // FORBIDEN FUNCTION
 	"\nray direction x = %f, y = %f;\nplane x = %f, y = %f\n\n", p->pos.x, p->pos.y, 
 	p->dir.x, p->dir.y, p->ray.x, p->ray.y, p->plane.x, p->plane.y);
 }
 
-void			make_actions(SDL_Keycode k, t_player *p)
+void			make_actions(SDL_Keycode k, t_player *p, t_game *g)
 {
 	switch (k)
 	{
-//		int		**m;
-
-	//	m = p->map;
 		case SDLK_UP:
-			if (p->map[(int)(p->pos.y + p->dir.y * SPEED)][(int)p->pos.x] == 0)
+			if (g->w_map[(int)(p->pos.y + p->dir.y * SPEED)][(int)p->pos.x] == 0)
 				p->pos.y += p->dir.y * SPEED;
-			if (p->map[(int)p->pos.y][(int)(p->pos.x + p->dir.x * SPEED)] == 0)
+			if (g->w_map[(int)p->pos.y][(int)(p->pos.x + p->dir.x * SPEED)] == 0)
 				p->pos.x += p->dir.x * SPEED;
 			break ;
 		case SDLK_DOWN:
-			if (p->map[(int)(p->pos.y - p->dir.y * SPEED)][(int)p->pos.x] == 0)
+			if (g->w_map[(int)(p->pos.y - p->dir.y * SPEED)][(int)p->pos.x] == 0)
 				p->pos.y -= p->dir.y * SPEED;
-			if (p->map[(int)p->pos.y][(int)(p->pos.x - p->dir.x * SPEED)] == 0)
+			if (g->w_map[(int)p->pos.y][(int)(p->pos.x - p->dir.x * SPEED)] == 0)
 				p->pos.x -= p->dir.x * SPEED;
 			break ;
 		case SDLK_LEFT:
@@ -294,39 +274,27 @@ int				game_loop(t_sdl *s, t_player *p, t_game *g)
 				if (e.key.keysym.sym == SDLK_ESCAPE)
 					return (0);
 				if (e.key.keysym.sym == SDLK_q)
-					// Go To main Menue
-					// if (ret == NEW_GAME)
-					return (NEW_GAME);
+					return (MENU);
 				else
-					make_actions(e.key.keysym.sym, p);
+					make_actions(e.key.keysym.sym, p, g);
 			}
 		}
 	}
 	return (1);
 }
 
-int				start_game(t_sdl *sdl)
+int				start_game(t_sdl *sdl, t_game *game)
 {
 	int			ret;
-	t_game		*game;
 	t_player 	*player;
 	
 	ret = 0;
 	if (!(player = create_player()))
 		return (error_message("Create player"));
-	if(!(game = create_game()))
-	{
-		free(player);
-		return (error_message("Create game"));
-	}
-	game->half_win_y = sdl->win_size.y / 2;
-	player->map = sdl->w_map;
-	find_free_place(sdl, &player->pos);
-	player->pos.x = 22;
-	player->pos.y = 11.5;
-//	show_map(sdl->w_map, sdl->rows, sdl->elem);
+	find_free_place(game, &player->pos);
 	ret = game_loop(sdl, player, game);
-	free (game);
+	if (ret == MENU)
+		ret = NEW_GAME;
 	free (player);
 	return (ret);
 }

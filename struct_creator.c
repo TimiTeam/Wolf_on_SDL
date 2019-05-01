@@ -36,51 +36,62 @@ int 		get_map_size(int fd)
 	return (s);
 }
 
-t_sdl			*new_t_sdl(int s_x, int s_y, char *file_pth)
+t_sdl			*new_t_sdl(int s_x, int s_y)
 {
 	t_sdl		*s;
-	int			fd;
 	int 		i;
 
 	if(!(s = (t_sdl*)malloc(sizeof(t_sdl))))
 		return (NULL);
 	s->win_size.x = s_x;
 	s->win_size.y = s_y;
-	if ((fd = open(file_pth, O_RDONLY)) < 1)
-	{
-		error_message("File not found");
-		free(s);
-		return (NULL);
-	}
-	if ((s->rows = get_map_size(fd)) == ERROR)
-	{
-		error_message("Wrong file or file is broken");
-		free(s);
-		return (NULL);
-	}
-	close(fd);
-	s->elem = (int*)malloc(sizeof(int) * s->rows);
-	if(!(s->w_map = read_and_save_map(s->rows, file_pth, s->elem)))
-	{
-		error_message("Wrong file or file is broken");
-		free(s);
-		return (NULL);
-	}
 	s->win = NULL;
 	s->ren = NULL;
 	s->surf = NULL;
+	s->path_map = NULL;
 	i = 0;
 	while (i < COUNT_TEXT)
 		s->walls[i++] = NULL;
+	s->game = NULL;
+	s->player = NULL;
 	return (s);
 }
 
-t_game			*create_game()
+t_game			*new_fresh_t_game()
 {
 	t_game		*g;
 
 	if(!(g = (t_game*)malloc(sizeof(t_game))))
 		return (NULL);
+	clear_fields_t_game(g);
+	g->w_map = NULL;
+	g->elem = NULL;
+	return (g);
+}
+
+t_game			*create_game(char *path_to_map)
+{
+	t_game		*g;
+	int			fd;
+
+	if (!(g = new_fresh_t_game()))
+		return (NULL);
+	if (((fd = open(path_to_map, O_RDONLY)) < 1 || 
+			(g->rows = get_map_size(fd)) == ERROR))
+	{
+		ft_putstr("Fatal! File not found: ");
+		ft_putendl(path_to_map);
+		destroy_game(g);
+		return (NULL);
+	}
+	close(fd);
+	g->elem = (int*)malloc(sizeof(int) * g->rows);
+	if(!(g->w_map = read_and_save_map(g->rows, path_to_map, g->elem)))
+	{
+		error_message("Wrong file or file is broken");
+		destroy_game(g);
+		return (NULL);
+	}
 	return (g);
 }
 
@@ -122,7 +133,11 @@ int				load_walls(char *file_list, t_sdl *sdl)
 	char		*pref;
 
 	if ((fd = open(file_list, O_RDONLY)) < 1)
+	{
+		ft_putstr("FATAL! File not found:");
+		ft_putendl(file_list);
 		return (ERROR);
+	}
 	i = 0;
 	while (get_next_line(fd, &name) > 0)
 	{
@@ -143,18 +158,16 @@ int				load_walls(char *file_list, t_sdl *sdl)
 int				init_sdl_elem(t_sdl *s)
 {
 	if (SDL_Init(SDL_INIT_VIDEO) < 0)
-		return (1);
+		return (ERROR);
 	s->win = SDL_CreateWindow("test_sdl_wolf", SDL_WINDOWPOS_CENTERED,
 		SDL_WINDOWPOS_CENTERED, s->win_size.x, s->win_size.y, SDL_WINDOW_SHOWN);
 	if (!s->win)
-		return (1);
+		return (ERROR);
 	s->ren = SDL_CreateRenderer(s->win, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 	if (!s->ren)
-		return (1);
-//	s->surf = SDL_CreateRGBSurface(0, s->win_size.x, s->win_size.y, 32, 0, 0 ,0, 255);
+		return (ERROR);
 	s->surf = NULL;
 	if (load_walls("res/resurses.txt", s) == ERROR)
-		return (1);
-	SDL_SetRenderDrawColor(s->ren, 255, 255, 255, 255);
+		return (ERROR);
 	return (0);
 }

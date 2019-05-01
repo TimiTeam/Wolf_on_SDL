@@ -51,6 +51,7 @@ int 		**read_and_save_map(int size, char *pth, int *rows_size)
 		ft_strdel(&line);
 		i++;
 	}
+	close(fd);
 	ft_strdel(&line);
 	return (arr);
 }
