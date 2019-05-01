@@ -64,57 +64,40 @@ void 			draw_strip_of_wall(int x, t_sdl *s, t_game *g, t_player *p)
 {
 	int			num_tex;
 	double		wall_x;
-	int			tex_x;
-	int			tex_y;
+	t_point		tex;
+	t_point 	to;
 	int			y;
 	int			d;
-	SDL_Surface *sur;
 	int			start;
 	int			end;
 	
 	start = -g->half_wall_size + g->half_win_y;
-	if (start < 0)
-		start = 0;
+	start = start < 0 ? 0 : start;
 	end = g->half_wall_size + g->half_win_y;
-	if (end >= s->win_size.y)
-		end = s->win_size.y - 1;
-
+	end = end >= s->win_size.y ? s->win_size.y - 1 : end;
 	num_tex = g->w_map[g->m.y][g->m.x] - 1;
-//	num_tex = num_tex >= COUNT_TEXT ? COUNT_TEXT - 2 : num_tex;
-
 	if (!g->side)
 		wall_x = p->pos.y + g->wall_dist * p->ray.y;
 	else
 		wall_x = p->pos.x + g->wall_dist * p->ray.x;
 	wall_x -= floor(wall_x);
-
-	tex_x = (int)(wall_x * (double)TEXTURE_W);
-	if (g->side == 0 && p->ray.x > 0)
-		tex_x = TEXTURE_W - tex_x - 1;
-	if (g->side == 1 && p->ray.y < 0)
-		tex_x = TEXTURE_W - tex_x - 1;
-
-	sur = s->walls[num_tex];
+	tex.x = (int)(wall_x * (double)TEXTURE_W);
+	if ((g->side == 0 && p->ray.x > 0) || (g->side == 1 && p->ray.y < 0))
+		tex.x = TEXTURE_W - tex.x - 1;
 	y = start;
+	to.x = x;
 	while (y < end)
 	{
 		d = y * 256 - s->win_size.y * 128 + g->wall_size * 128;
-		tex_y = ((d * sur->h) / g->wall_size) / 256;
-		t_point to;
-		t_point	from;
-		to.x = x;
+		tex.y = ((d * s->walls[num_tex]->h) / g->wall_size) / 256;
 		to.y = y;
-		from.x = tex_x;
-		from.y = tex_y;
-		copy_surf(s->surf, sur, to, from);
+		copy_surf(s->surf, s->walls[num_tex], to, tex);
 		y++;
 	}
 }
 
 void			calculate_strip_wall(t_player *p, t_game *game)
 {
-	double		dist_to_wall;
-
 	while (1)
 	{
 		if (game->side_dist.x < game->side_dist.y)
@@ -136,8 +119,7 @@ void			calculate_strip_wall(t_player *p, t_game *game)
 		game->wall_dist = (game->m.y - p->pos.y + (double)(1 - game->step.y) / 2) / p->ray.y;
 	else
 		game->wall_dist = (game->m.x - p->pos.x + (double)(1 - game->step.x) / 2) / p->ray.x;
-	if (game->wall_dist <= 0)
-		game->wall_dist = 1.0;
+	game->wall_dist = game->wall_dist <= 0 ? 1.0 : game->wall_dist;
 }
 
 void			calculate_side_dist(t_player *player, t_game *game)
@@ -167,8 +149,6 @@ void			calculate_side_dist(t_player *player, t_game *game)
 void 			build_walls(t_sdl *sdl, t_player *player, t_game *game)
 {
 	double		camera;
-	int			strip_size;
-
 	int			x;
 
 	x = 0;
@@ -255,8 +235,6 @@ int				game_loop(t_sdl *s, t_player *p, t_game *g)
 	tex = NULL;
 	while(1)
 	{
-		SDL_SetRenderDrawColor (s->ren, 0, 0, 0, 255);
-		SDL_RenderClear(s->ren);
 		s->surf = SDL_CreateRGBSurface(0, s->win_size.x, s->win_size.y, 32, 0, 0 ,0, 255);
 		build_walls(s, p, g);
 		if (tex)
