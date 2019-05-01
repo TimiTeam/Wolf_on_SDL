@@ -118,7 +118,6 @@ SDL_Surface		*load_surface(SDL_Renderer *ren, char *pth)
 	opt = NULL;
 	if((s = SDL_LoadBMP(pth)))
 	{
-		return (s);
 		opt = SDL_ConvertSurface(s, s->format, 0);
 		SDL_FreeSurface(s);
 	}
