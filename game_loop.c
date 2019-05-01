@@ -45,65 +45,79 @@ void 		show_map(int **map, int size, int *rows_size)
 
 FILE			*fp;
 
-void			set_color(int w, int shadow, t_color *rgb)
+int				copy_surf(SDL_Surface *dst, SDL_Surface *src, t_point to, t_point from)
 {
-	if (w == 1)
-	{
-		rgb->r = 96;
-		rgb->g = 96;
-		rgb->b = 96;
-	}
-	else if (w == 2)
-	{
-		rgb->r = 189;
-		rgb->g = 96;
-		rgb->b = 66;
-	}
-	else if (w == 3)							// THIS FUNCTION MUST RETURN RGB UINT8 STRUCT FOR SDL DRAW LINE/DRAW POINT
-	{
-		rgb->r = 46;
-		rgb->g = 129;
-		rgb->b = 159;
-	}
-	else if (w == 4)
-	{
-		rgb->r = 180;
-		rgb->g = 0;
-		rgb->b = 6;
-	}
-	else if (w == 5)
-	{
-		rgb->r = 86;
-		rgb->g = 139;
-		rgb->b = 72;
-	}
-	if (shadow)
-	{
-		rgb->r /= 2;
-		rgb->g /= 2;
-		rgb->b /= 2;
-	}
+	SDL_Rect	d;
+	SDL_Rect	s;
+
+	d.x = to.x;
+	d.y = to.y;
+	d.w = 1;
+	d.h = 1;
+	s.x = from.x;
+	s.y = from.y;
+	s.w = 1;
+	s.h = 1;
+	SDL_BlitSurface(src, &s, dst, &d);
+	return (0);
 }
 
-void 			draw_strip_of_wall(int x, t_sdl *s, t_game *g)
+void 			draw_strip_of_wall(int x, t_sdl *s, t_game *g, t_player *p)
 {
 	t_color		col;
+	int			num_tex;
+	double		wall_x;
+	int			tex_x;
+	int			tex_y;
+	int			y;
+	int			d;
+	SDL_Surface *sur;
+	void		*data;
+	void		*dst;
+	Uint16 		color;
+	int			start;
+	int			end;
+	
+	start = -g->half_wall_size + g->half_win_y;
+	if (start < 0)
+		start = 0;
+	end = g->half_wall_size + g->half_win_y;
+	if (end >= s->win_size.y)
+		end = s->win_size.y - 1;
 
-	g->line.start.x = x;
-	g->line.start.y = -g->wall_size + g->half_win_y;
-	g->line.end.x = x;
-	g->line.end.y = g->wall_size + g->half_win_y;
-	if (g->line.start.y < 0)
-		g->line.start.y = 0;
-	if (g->line.end.y >= s->win_size.y)
-		g->line.end.y = s->win_size.y - 1;
-	SDL_SetRenderDrawColor(s->ren, 200, 170, 180, 255);
-	SDL_RenderDrawLine(s->ren, x, 0, x, g->line.start.y);
-	set_color(s->w_map[g->m.y][g->m.x], g->side, &col);
-	SDL_SetRenderDrawColor (s->ren, col.r, col.g, col.b, 255);
-	SDL_RenderDrawLine(s->ren, g->line.start.x, g->line.start.y, g->line.end.x, g->line.end.y);
-	SDL_SetRenderDrawColor(s->ren, 15, 15, 10, 255);
-	SDL_RenderDrawLine(s->ren, x, g->line.end.y, x, s->win_size.y);
+	num_tex = s->w_map[g->m.y][g->m.x] - 1;
+//	num_tex = num_tex >= COUNT_TEXT ? COUNT_TEXT - 2 : num_tex;
+
+	if (!g->side)
+		wall_x = p->pos.y + g->wall_dist * p->ray.y;
+	else
+		wall_x = p->pos.x + g->wall_dist * p->ray.x;
+	wall_x -= floor(wall_x);
+
+	tex_x = (int)(wall_x * (double)TEXTURE_W);
+	if (g->side == 0 && p->ray.x > 0)
+		tex_x = TEXTURE_W - tex_x - 1;
+	if (g->side == 1 && p->ray.y < 0)
+		tex_x = TEXTURE_W - tex_x - 1;
+
+	sur = s->walls[num_tex];
+	y = start;
+	while (y < end)
+	{
+		d = y * 256 - s->win_size.y * 128 + g->wall_size * 128;
+		tex_y = ((d * sur->h) / g->wall_size) / 256;
+		data = sur->pixels;
+		dst = s->surf->pixels;
+		color = (Uint16)data + tex_x + tex_y * sur->h;
+		t_point to;
+		t_point	from;
+		to.x = x;
+		to.y = y;
+		from.x = tex_x;
+		from.y = tex_y;
+		copy_surf(s->surf, sur, to, from);
+		y++;
+	}
 }
 
 void			calculate_strip_wall(t_player *p, t_game *game)
@@ -184,10 +198,10 @@ void 			build_walls(t_sdl *sdl, t_player *player, t_game *game)
 //		fprintf(fp,"\n\t\t\t--Column #%d--\n\ncamera = %f; ray x = %f, y = %f; delta_dist x = %f, y = %f\n", x, camera, player->ray.x, player->ray.y, game->delta_dist.x, game->delta_dist.y);
 		calculate_side_dist(player, game);
 		calculate_strip_wall(player, game);
-		strip_size = (int)(sdl->win_size.y / game->wall_dist);
-		game->wall_size = strip_size / 2;
+		game->wall_size = (int)(sdl->win_size.y / game->wall_dist);
+		game->half_wall_size = game->wall_size / 2;
 //		fprintf(fp, ", and wall size is %d\n", strip_size);
-		draw_strip_of_wall(x, sdl, game);
+		draw_strip_of_wall(x, sdl, game, player);
 		x++;
 	}
 //	ft_putendl("\t\t*** END ***");
@@ -256,13 +270,21 @@ void			make_actions(SDL_Keycode k, t_player *p)
 int				game_loop(t_sdl *s, t_player *p, t_game *g)
 {
 	SDL_Event	e;
+	SDL_Texture	*tex;
 
+	tex = NULL;
 	while(1)
 	{
 		SDL_SetRenderDrawColor (s->ren, 0, 0, 0, 255);
 		SDL_RenderClear(s->ren);
+		s->surf = SDL_CreateRGBSurface(0, s->win_size.x, s->win_size.y, 32, 0, 0 ,0, 255);
 		build_walls(s, p, g);
+		if (tex)
+			SDL_DestroyTexture(tex);
+		tex = SDL_CreateTextureFromSurface(s->ren, s->surf);
+		SDL_RenderCopy(s->ren, tex, NULL, NULL);
 		SDL_RenderPresent(s->ren);
+		SDL_FreeSurface(s->surf);
 		while (SDL_PollEvent(&e))
 		{
 			if (e.type == SDL_QUIT)
@@ -300,7 +322,9 @@ int				start_game(t_sdl *sdl)
 	game->half_win_y = sdl->win_size.y / 2;
 	player->map = sdl->w_map;
 	find_free_place(sdl, &player->pos);
-	show_map(sdl->w_map, sdl->rows, sdl->elem);
+	player->pos.x = 22;
+	player->pos.y = 11.5;
+//	show_map(sdl->w_map, sdl->rows, sdl->elem);
 	ret = game_loop(sdl, player, game);
 	free (game);
 	free (player);

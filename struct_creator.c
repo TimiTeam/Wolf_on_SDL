@@ -40,6 +40,7 @@ t_sdl			*new_t_sdl(int s_x, int s_y, char *file_pth)
 {
 	t_sdl		*s;
 	int			fd;
+	int 		i;
 
 	if(!(s = (t_sdl*)malloc(sizeof(t_sdl))))
 		return (NULL);
@@ -68,7 +69,9 @@ t_sdl			*new_t_sdl(int s_x, int s_y, char *file_pth)
 	s->win = NULL;
 	s->ren = NULL;
 	s->surf = NULL;
-	s->tex = NULL;
+	i = 0;
+	while (i < COUNT_TEXT)
+		s->walls[i++] = NULL;
 	return (s);
 }
 
@@ -96,6 +99,47 @@ t_player		*create_player()
 	return (p);
 }
 
+SDL_Surface		*load_surface(SDL_Renderer *ren, char *pth)
+{
+	SDL_Surface	*opt;
+	SDL_Surface	*s;
+
+	opt = NULL;
+	if((s = SDL_LoadBMP(pth)))
+	{
+		return (s);
+		opt = SDL_ConvertSurface(s, s->format, 0);
+		SDL_FreeSurface(s);
+	}
+	return (opt);
+}
+
+int				load_walls(char *file_list, t_sdl *sdl)
+{
+	int			i;
+	int			fd;
+	char		*name;
+	char		*pref;
+
+	if ((fd = open(file_list, O_RDONLY)) < 1)
+		return (ERROR);
+	i = 0;
+	while (get_next_line(fd, &name) > 0)
+	{
+		pref = ft_strjoin("res/",name);
+		if(!(sdl->walls[i] = load_surface(sdl->ren, pref)))
+			return (ERROR);
+		ft_strdel(&pref);
+		ft_strdel(&name);
+		i++;
+	}
+	ft_strdel(&name);
+	ft_strdel(&pref);
+	if (i != COUNT_TEXT)
+		return (ERROR);
+	return (0);
+}
+
 int				init_sdl_elem(t_sdl *s)
 {
 	if (SDL_Init(SDL_INIT_VIDEO) < 0)
@@ -106,6 +150,10 @@ int				init_sdl_elem(t_sdl *s)
 		return (1);
 	s->ren = SDL_CreateRenderer(s->win, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 	if (!s->ren)
+		return (1);
+//	s->surf = SDL_CreateRGBSurface(0, s->win_size.x, s->win_size.y, 32, 0, 0 ,0, 255);
+	s->surf = NULL;
+	if (load_walls("res/resurses.txt", s) == ERROR)
 		return (1);
 	SDL_SetRenderDrawColor(s->ren, 255, 255, 255, 255);
 	return (0);

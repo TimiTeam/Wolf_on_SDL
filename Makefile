@@ -17,7 +17,7 @@ SDL_RUN_FLAGS = -framework SDL2 -rpath frameworks
 all: $(NAME)
 
 compile: $(SRCS) $(LIBFT_A)
-	clang -g $(SRCS) $(SDL_INCL) $(SDL_IMG_INCL) $(SDL_RUN_FLAGS) $(LFT_INCL) -o $(NAME)
+	clang -g $(SRCS) $(SDL_INCL) $(SDL_RUN_FLAGS) $(LFT_INCL) -o $(NAME)
 
 compile_lib: libft/
 	make -C libft/

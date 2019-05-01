@@ -13,19 +13,23 @@ void 		free_void_map(void **map, int size)
 
 int					close_all(t_sdl *s)
 {
+	int				i;
+
+	i = 0;
 	if (s)
 	{
 		if (s->win)
 			SDL_DestroyWindow(s->win);
 		if (s->ren)
 			SDL_DestroyRenderer(s->ren);
-		if (s->surf)
-			SDL_FreeSurface(s->surf);
-		if (s->tex)
-			SDL_DestroyTexture(s->tex);
+	//	if (s->surf)
+	//		SDL_FreeSurface(s->surf);
+/*		if (s->tex[0])
+			while (i < COUNT_TEXT)
+				SDL_DestroyTexture(s->tex[i++]);*/
 		free (s);
-		if (s->w_map)
-			free_void_map((void**)s->w_map, s->rows);
+	/*	if (s->w_map)
+			free_void_map((void**)s->w_map, s->rows);*/
 	/*	if (s->elem)
 			free(s->elem);*/
 	}

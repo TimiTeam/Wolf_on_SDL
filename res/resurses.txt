@@ -1,0 +1,9 @@
+greystone.bmp
+bluestone.bmp
+wood.bmp
+mossy.bmp
+redbrick.bmp
+colorstone.bmp
+eagle.bmp
+purplestone.bmp
+greenlight.bmp

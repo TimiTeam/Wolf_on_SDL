@@ -6,6 +6,9 @@
 #include "libft.h"
 #include "SDL.h"
 
+#define	COUNT_TEXT 9
+#define TEXTURE_W 64
+#define TEXTURE_H 64
 #define ERROR -1
 #define NEW_GAME 2
 #define SPEED 0.2
@@ -49,10 +52,11 @@ typedef	struct		s_game
 {
 	t_point			m;
 	t_point			step;
-	t_line			line;
+//	t_line			line;
 	int				side;
 	double			wall_dist;
 	int				wall_size;
+	int				half_wall_size;
 	int				half_win_y;
 	t_vec			side_dist;
 	t_vec			delta_dist;
@@ -64,7 +68,7 @@ typedef	struct		s_sdl
 	SDL_Window		*win;
 	SDL_Renderer	*ren;
 	SDL_Surface		*surf;
-	SDL_Texture		*tex;
+	SDL_Surface		*walls[COUNT_TEXT];
 	t_player		*player;
 	t_game			*game;
 	int				**w_map;
