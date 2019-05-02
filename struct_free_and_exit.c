@@ -46,7 +46,6 @@ int					close_all(t_sdl *s)
 	{
 		if (s->win)
 			SDL_DestroyWindow(s->win);
-		SDL_DestroyRenderer(s->ren);
 		while (i < COUNT_TEXT)
 			SDL_FreeSurface(s->walls[i++]);
 		if (s->path_map)
@@ -55,7 +54,7 @@ int					close_all(t_sdl *s)
 	}
 	SDL_Quit();
 	ft_putendl("All was destroyed\nGood by :)");
-	system("leaks -q test_sdl_wolf");
+//	system("leaks -q test_sdl_wolf");
 	return (0);
 }
 

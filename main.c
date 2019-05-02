@@ -8,7 +8,7 @@ int				main(int argc, char **argv)
 
 	if (argc != 2)
 		return (error_exit("need enter path to world map", NULL, NULL));
-	if (!(sdl = new_t_sdl(1200, 980)))
+	if (!(sdl = new_t_sdl(980, 640)))
 		return (error_exit("FATAL", NULL, NULL));
 	sdl->path_map = ft_strdup(argv[1]);
 	if (init_sdl_elem(sdl) == ERROR)

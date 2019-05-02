@@ -8,6 +8,8 @@ SDL_INCL = -I frameworks/SDL2.framework/Headers/
 
 SDL_IMG_INCL = -I framework/SDL2_image.framework/Headers/
 
+SDL_INCL_LINUX = `sdl2-config --cflags --libs`
+
 LFT_INCL = -I libft/ -L libft -lft
 
 LIBFT_A = libft/libft.a
@@ -18,6 +20,9 @@ all: $(NAME)
 
 compile: $(SRCS) $(LIBFT_A)
 	clang -g $(SRCS) $(SDL_INCL) $(SDL_RUN_FLAGS) $(LFT_INCL) -o $(NAME)
+
+compile_linux: $(SRCS) $(LIBFT_A)
+	clang -g $(SRCS) $(SDL_INCL_LINUX) $(LFT_INCL) -lm -o $(NAME)
 
 compile_lib: libft/
 	make -C libft/
