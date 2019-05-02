@@ -114,6 +114,7 @@ SDL_Surface		*load_surface(SDL_Renderer *ren, char *pth)
 {
 	SDL_Surface	*opt;
 	SDL_Surface	*s;
+	SDL_Rect	r;
 
 	opt = NULL;
 	if((s = SDL_LoadBMP(pth)))
