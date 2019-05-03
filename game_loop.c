@@ -60,7 +60,7 @@ int				copy_surf(SDL_Surface *dst, SDL_Surface *src, t_point to, t_point from)
 	return (0);
 }
 
-void 			print_floor(t_point point, t_sdl *s, t_game *g, t_player *p, double	wall_x)
+void 			floor_ceiling(t_point point, SDL_Surface *text, t_sdl *s, t_game *g, t_player *p, double wall_x)
 {
 	t_vec		floor_wall;
 	t_vec		current_floor;
@@ -69,6 +69,7 @@ void 			print_floor(t_point point, t_sdl *s, t_game *g, t_player *p, double	wall
 	double		distPlayer;
 	double		currentDist;
 	double 		weight;
+	int			to;
 
 	if (!g->side && p->ray.x > 0)
 	{
@@ -91,6 +92,7 @@ void 			print_floor(t_point point, t_sdl *s, t_game *g, t_player *p, double	wall
 		floor_wall.y = g->m.y + 1.0;
 	}
 	distWall = g->wall_dist;
+//	to = point.y == 0 ? 
 	while (point.y <= s->win_size.y)
 	{
 		currentDist = s->win_size.y / (2.0 * point.y - s->win_size.y);
@@ -100,9 +102,14 @@ void 			print_floor(t_point point, t_sdl *s, t_game *g, t_player *p, double	wall
 		current_floor.x = weight * floor_wall.x + (1.0 - weight) * p->pos.x;
 		current_floor.y = weight * floor_wall.y + (1.0 - weight) * p->pos.y;
 
-		floor_tex.x = (int)(current_floor.x * s->walls[COUNT_TEXT - 1]->w) % s->walls[COUNT_TEXT - 1]->w;
-		floor_tex.y = (int)(current_floor.y * s->walls[COUNT_TEXT - 1]->h) % s->walls[COUNT_TEXT - 1]->h;
-		copy_surf(s->surf, s->walls[COUNT_TEXT - 1], point, floor_tex);
+		floor_tex.x = (int)(current_floor.x * text->w) % text->w;
+		floor_tex.y = (int)(current_floor.y * text->h) % text->h;
+		if (floor_tex.y < 0)
+			floor_tex.y *= -1;
+		if (floor_tex.x < 0)
+			floor_tex.x *= -1;
+//		floor_tex.x = floor_tex.x < 0 ? 0 : floor_tex.x;
+		copy_surf(s->surf, text, point, floor_tex);
 		point.y++;
 	}
 }
@@ -112,37 +119,40 @@ void 			draw_strip_of_wall(int x, t_sdl *s, t_game *g, t_player *p)
 	int			num_tex;
 	double		wall_x;
 	t_point		tex;
-	t_point 	to;
-	int			y;
+	t_point 	from;
+	t_point		ceiling;
 	int			d;
-	int			start;
 	int			end;
 	
-	start = -g->half_wall_size + g->half_win_y;
-	start = start < 0 ? 0 : start;
+	from.y = -g->half_wall_size + g->half_win_y;
+	from.y = from.y < 0 ? 0 : from.y;
 	end = g->half_wall_size + g->half_win_y;
 	end = end >= s->win_size.y ? s->win_size.y - 1 : end;
+	from.x = x;
 	num_tex = g->w_map[g->m.y][g->m.x] - 1;
 	if (!g->side)
 		wall_x = p->pos.y + g->wall_dist * p->ray.y;
 	else
 		wall_x = p->pos.x + g->wall_dist * p->ray.x;
 	wall_x -= floor(wall_x);
+	if (from.y > 0)
+	{
+		ceiling.x = x;
+		ceiling.y = 0;
+		floor_ceiling(ceiling, s->walls[5], s, g, p, wall_x);
+	}
 	tex.x = (int)(wall_x * (double)TEXTURE_W);
 	if ((g->side == 0 && p->ray.x > 0) || (g->side == 1 && p->ray.y < 0))
 		tex.x = TEXTURE_W - tex.x - 1;
-	y = start;
-	to.x = x;
-	while (y < end)
+	while (from.y < end)
 	{
-		d = y * 256 - s->win_size.y * 128 + g->wall_size * 128;
+		d = from.y * 256 - s->win_size.y * 128 + g->wall_size * 128;
 		tex.y = ((d * s->walls[num_tex]->h) / g->wall_size) / 256;
-		to.y = y;
-		copy_surf(s->surf, s->walls[num_tex], to, tex);
-		y++;
+		copy_surf(s->surf, s->walls[num_tex], from, tex);
+		from.y++;
 	}
-	if (y < s->win_size.y)
-		print_floor(to, s, g, p, wall_x);
+	if (from.y < s->win_size.y)
+		floor_ceiling(from, s->walls[COUNT_TEXT - 1], s, g, p, wall_x);
 }
 
 void			calculate_strip_wall(t_player *p, t_game *game)
