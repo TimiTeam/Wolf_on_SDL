@@ -219,21 +219,17 @@ void 			build_walls(t_sdl *sdl, t_player *player, t_game *game)
 	}
 }
 
-void 			rotate_player(t_player *p, double rotate)
+void 			rotate_player(t_player *p, t_vec cos_sin)
 {
 	double 		oldDirX;
 	double 		oldPlaneX;
-	double 		cos_rotate;
-	double 		sin_rotate;
 
 	oldDirX = p->dir.x;
 	oldPlaneX = p->plane.x;
-	cos_rotate = cos(rotate);
-	sin_rotate = sin(rotate);
-	p->dir.x = p->dir.x * cos_rotate - p->dir.y * sin_rotate;
-	p->dir.y = oldDirX * sin_rotate + p->dir.y * cos_rotate;
-	p->plane.x = p->plane.x * cos_rotate - p->plane.y * sin_rotate;
-	p->plane.y = oldPlaneX * sin_rotate + p->plane.y * cos_rotate;
+	p->dir.x = p->dir.x * cos_sin.x - p->dir.y * cos_sin.y;
+	p->dir.y = oldDirX * cos_sin.y + p->dir.y * cos_sin.x;
+	p->plane.x = p->plane.x * cos_sin.x - p->plane.y * cos_sin.y;
+	p->plane.y = oldPlaneX * cos_sin.y + p->plane.y * cos_sin.x;
 }
 
 void 			print_info(t_player *p)
@@ -260,10 +256,10 @@ void			make_actions(SDL_Keycode k, t_player *p, t_game *g)
 				p->pos.x -= p->dir.x * SPEED;
 			break ;
 		case SDLK_LEFT:
-			rotate_player(p, ROTATE);
+			rotate_player(p, p->pls_cos_sin);
 			break ;
 		case SDLK_RIGHT:
-			rotate_player(p, -ROTATE);
+			rotate_player(p, p->min_cos_sin);
 			break ;
 		case SDLK_i :
 			print_info(p);

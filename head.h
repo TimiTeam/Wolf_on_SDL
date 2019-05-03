@@ -34,6 +34,8 @@ typedef struct		s_player
 	t_vec			dir;
 	t_vec			plane;
 	t_vec			ray;
+	t_vec			min_cos_sin;
+	t_vec			pls_cos_sin;
 }					t_player;
 
 typedef	struct		s_game

@@ -107,6 +107,10 @@ t_player		*create_player()
 	p->dir.y = 0;
 	p->plane.x = 0;
 	p->plane.y = 0.86;
+	p->pls_cos_sin.x = cos(ROTATE);
+	p->pls_cos_sin.y = sin(ROTATE);
+	p->min_cos_sin.x = cos(-ROTATE);
+	p->min_cos_sin.y = sin(-ROTATE);
 	return (p);
 }
 
