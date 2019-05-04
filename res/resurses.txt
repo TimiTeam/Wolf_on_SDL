@@ -7,6 +7,6 @@ purplestone.bmp
 greenlight.bmp
 colorstone.bmp
 mossy.bmp
+cloud_sky.bmp
 clear_sky.bmp
-sky.bmp
 ground.bmp

@@ -28,15 +28,31 @@ typedef	struct		s_point
 	int				x;
 	int				y;
 }					t_point;
-	
+
+typedef	struct		s_cos_sin
+{
+	double 			cos;
+	double			sin;
+}					t_cos_sin;
+
+typedef	struct		s_pixel_buf
+{
+	SDL_Surface		*src_surf;
+	t_point			src_point;
+	SDL_Surface		*dst_surf;
+	t_point			dst_point;
+	int				from_y;
+	int				to_y;
+}					t_pixel_buf;
+
 typedef struct		s_player
 {
 	t_vec			pos;
 	t_vec			dir;
 	t_vec			plane;
 	t_vec			ray;
-	t_vec			min_cos_sin;
-	t_vec			pls_cos_sin;
+	t_cos_sin		plus;
+	t_cos_sin		minus;
 }					t_player;
 
 typedef	struct		s_game

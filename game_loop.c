@@ -43,33 +43,29 @@ void 		show_map(int **map, int size, int *rows_size)
 	}
 }
 
-int				copy_surf(SDL_Surface *dst, SDL_Surface *src, t_point ds, t_point sr)
+int				copy_surf(t_pixel_buf pix_buf)
 {
 	SDL_Rect	d;
 	SDL_Rect	s;
 
-	d.x = ds.x;
-	d.y = ds.y;
+	d.x = pix_buf.dst_point.x;
+	d.y = pix_buf.dst_point.y;
 	d.w = 1;
 	d.h = 1;
-	s.x = sr.x;
-	s.y = sr.y;
+	s.x = pix_buf.src_point.x;
+	s.y = pix_buf.src_point.y;
 	s.w = 1;
 	s.h = 1;
-	SDL_BlitSurface(src, &s, dst, &d);
+	SDL_BlitSurface(pix_buf.src_surf , &s, pix_buf.dst_surf, &d);
 	return (0);
 }
 
-void 			floor_ceiling(t_point point, SDL_Surface *text, t_sdl *s, t_game *g, t_player *p, double wall_x)
+void 			floor_ceiling(t_pixel_buf tr, t_sdl *s, t_game *g, t_player *p, double wall_x)
 {
 	t_vec		floor_wall;
-	t_vec		current_floor;
-	t_point		floor_tex;
-	double 		distWall;
-	double		distPlayer;
+	t_vec		curr_pint;
 	double		currentDist;
 	double 		weight;
-	int			to;
 
 	if (!g->side && p->ray.x > 0)
 	{
@@ -91,26 +87,22 @@ void 			floor_ceiling(t_point point, SDL_Surface *text, t_sdl *s, t_game *g, t_p
 		floor_wall.x = g->m.x + wall_x;
 		floor_wall.y = g->m.y + 1.0;
 	}
-	distWall = g->wall_dist;
-//	to = point.y == 0 ? 
-	while (point.y <= s->win_size.y)
+	while (tr.from_y <= tr.to_y)
 	{
-		currentDist = s->win_size.y / (2.0 * point.y - s->win_size.y);
-
-		weight = (currentDist - 0.0) / (distWall - 0.0);
+		currentDist = s->win_size.y / (2.0 * tr.from_y - s->win_size.y);
+		weight = currentDist / g->wall_dist;
 		weight = fabs(weight);
-		current_floor.x = weight * floor_wall.x + (1.0 - weight) * p->pos.x;
-		current_floor.y = weight * floor_wall.y + (1.0 - weight) * p->pos.y;
-
-		floor_tex.x = (int)(current_floor.x * text->w) % text->w;
-		floor_tex.y = (int)(current_floor.y * text->h) % text->h;
-		if (floor_tex.y < 0)
-			floor_tex.y *= -1;
-		if (floor_tex.x < 0)
-			floor_tex.x *= -1;
-//		floor_tex.x = floor_tex.x < 0 ? 0 : floor_tex.x;
-		copy_surf(s->surf, text, point, floor_tex);
-		point.y++;
+		curr_pint.x = weight * floor_wall.x + (1.0 - weight) * p->pos.x;
+		curr_pint.y = weight * floor_wall.y + (1.0 - weight) * p->pos.y;
+		tr.src_point.x = (int)(curr_pint.x * tr.src_surf->w) % tr.src_surf->w;
+		tr.src_point.y = (int)(curr_pint.y * tr.src_surf->h) % tr.src_surf->h;
+		if (tr.src_point.y < 0)
+			tr.src_point.y *= -1;
+		if (tr.src_point.x < 0)
+			tr.src_point.x *= -1;
+		tr.dst_point.y = tr.from_y;
+		copy_surf(tr);
+		tr.from_y++;
 	}
 }
 
@@ -118,41 +110,50 @@ void 			draw_strip_of_wall(int x, t_sdl *s, t_game *g, t_player *p)
 {
 	int			num_tex;
 	double		wall_x;
-	t_point		tex;
-	t_point 	from;
-	t_point		ceiling;
 	int			d;
-	int			end;
-	
-	from.y = -g->half_wall_size + g->half_win_y;
-	from.y = from.y < 0 ? 0 : from.y;
-	end = g->half_wall_size + g->half_win_y;
-	end = end >= s->win_size.y ? s->win_size.y - 1 : end;
-	from.x = x;
+	int			start_y;
+	int			end_y;
+	t_pixel_buf	transport; //
+
+	start_y = -g->half_wall_size + g->half_win_y;
+	start_y = start_y < 0 ? 0 : start_y;
+	end_y  = g->half_wall_size + g->half_win_y;
+	end_y  = end_y  >= s->win_size.y ? s->win_size.y - 1 : end_y;
 	num_tex = g->w_map[g->m.y][g->m.x] - 1;
+
+	transport.dst_surf = s->surf;
+	transport.dst_point.x = x;
+	transport.from_y = 0;
 	if (!g->side)
 		wall_x = p->pos.y + g->wall_dist * p->ray.y;
 	else
 		wall_x = p->pos.x + g->wall_dist * p->ray.x;
 	wall_x -= floor(wall_x);
-	if (from.y > 0)
+	if (start_y > 0)
 	{
-		ceiling.x = x;
-		ceiling.y = 0;
-		floor_ceiling(ceiling,  s->walls[COUNT_TEXT - 2], s, g, p, wall_x);
+		transport.to_y = start_y;
+		transport.src_surf = s->walls[COUNT_TEXT - 2];
+		floor_ceiling(transport, s, g, p, wall_x);
 	}
-	tex.x = (int)(wall_x * (double)TEXTURE_W);
+	transport.src_surf = s->walls[num_tex];
+	transport.src_point.x = (int)(wall_x * (double)TEXTURE_W);
 	if ((g->side == 0 && p->ray.x > 0) || (g->side == 1 && p->ray.y < 0))
-		tex.x = TEXTURE_W - tex.x - 1;
-	while (from.y < end)
+		transport.src_point.x = TEXTURE_W - transport.src_point.x - 1;
+	while (start_y < end_y)
 	{
-		d = from.y * 256 - s->win_size.y * 128 + g->wall_size * 128;
-		tex.y = ((d * s->walls[num_tex]->h) / g->wall_size) / 256;
-		copy_surf(s->surf, s->walls[num_tex], from, tex);
-		from.y++;
+		d = start_y * 256 - s->win_size.y * 128 + g->wall_size * 128;
+		transport.dst_point.y = start_y;
+		transport.src_point.y = ((d * transport.src_surf->h) / g->wall_size) / 256;
+		copy_surf(transport);
+		start_y++;
 	}
-	if (from.y < s->win_size.y)
-		floor_ceiling(from, s->walls[COUNT_TEXT - 1], s, g, p, wall_x);
+	if (start_y < s->win_size.y)
+	{
+		transport.from_y = start_y;
+		transport.to_y = s->win_size.y;
+		transport.src_surf = s->walls[COUNT_TEXT - 1];
+		floor_ceiling(transport, s, g, p, wall_x);
+	}
 }
 
 void			calculate_strip_wall(t_player *p, t_game *game)
@@ -229,17 +230,17 @@ void 			build_walls(t_sdl *s)
 	}
 }
 
-void 			rotate_player(t_player *p, t_vec cos_sin)
+void 			rotate_player(t_player *p, t_cos_sin cos_sin)
 {
 	double 		oldDirX;
 	double 		oldPlaneX;
 
 	oldDirX = p->dir.x;
 	oldPlaneX = p->plane.x;
-	p->dir.x = p->dir.x * cos_sin.x - p->dir.y * cos_sin.y;
-	p->dir.y = oldDirX * cos_sin.y + p->dir.y * cos_sin.x;
-	p->plane.x = p->plane.x * cos_sin.x - p->plane.y * cos_sin.y;
-	p->plane.y = oldPlaneX * cos_sin.y + p->plane.y * cos_sin.x;
+	p->dir.x = p->dir.x * cos_sin.cos - p->dir.y * cos_sin.sin;
+	p->dir.y = oldDirX * cos_sin.sin + p->dir.y * cos_sin.cos;
+	p->plane.x = p->plane.x * cos_sin.cos - p->plane.y * cos_sin.sin;
+	p->plane.y = oldPlaneX * cos_sin.sin + p->plane.y * cos_sin.cos;
 }
 
 void 			print_info(t_player	*p, t_sdl *s)
@@ -272,10 +273,10 @@ void			make_actions(SDL_Keycode k, t_sdl *s)
 				p->pos.x -= p->dir.x * SPEED;
 			break ;
 		case SDLK_LEFT:
-			rotate_player(p, p->pls_cos_sin);
+			rotate_player(p, p->plus);
 			break ;
 		case SDLK_RIGHT:
-			rotate_player(p, p->min_cos_sin);
+			rotate_player(p, p->minus);
 			break ;
 		case SDLK_i :
 			print_info(p,s);
