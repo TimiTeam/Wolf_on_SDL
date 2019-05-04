@@ -43,17 +43,17 @@ void 		show_map(int **map, int size, int *rows_size)
 	}
 }
 
-int				copy_surf(SDL_Surface *dst, SDL_Surface *src, t_point to, t_point from)
+int				copy_surf(SDL_Surface *dst, SDL_Surface *src, t_point ds, t_point sr)
 {
 	SDL_Rect	d;
 	SDL_Rect	s;
 
-	d.x = to.x;
-	d.y = to.y;
+	d.x = ds.x;
+	d.y = ds.y;
 	d.w = 1;
 	d.h = 1;
-	s.x = from.x;
-	s.y = from.y;
+	s.x = sr.x;
+	s.y = sr.y;
 	s.w = 1;
 	s.h = 1;
 	SDL_BlitSurface(src, &s, dst, &d);
@@ -98,7 +98,7 @@ void 			floor_ceiling(t_point point, SDL_Surface *text, t_sdl *s, t_game *g, t_p
 		currentDist = s->win_size.y / (2.0 * point.y - s->win_size.y);
 
 		weight = (currentDist - 0.0) / (distWall - 0.0);
-
+		weight = fabs(weight);
 		current_floor.x = weight * floor_wall.x + (1.0 - weight) * p->pos.x;
 		current_floor.y = weight * floor_wall.y + (1.0 - weight) * p->pos.y;
 
@@ -139,7 +139,7 @@ void 			draw_strip_of_wall(int x, t_sdl *s, t_game *g, t_player *p)
 	{
 		ceiling.x = x;
 		ceiling.y = 0;
-		floor_ceiling(ceiling, s->walls[5], s, g, p, wall_x);
+		floor_ceiling(ceiling,  s->walls[COUNT_TEXT - 2], s, g, p, wall_x);
 	}
 	tex.x = (int)(wall_x * (double)TEXTURE_W);
 	if ((g->side == 0 && p->ray.x > 0) || (g->side == 1 && p->ray.y < 0))
@@ -205,26 +205,26 @@ void			calculate_side_dist(t_player *player, t_game *game)
 	}
 }
 
-void 			build_walls(t_sdl *sdl, t_player *player, t_game *game)
+void 			build_walls(t_sdl *s)
 {
 	double		camera;
 	int			x;
 
 	x = 0;
-	while (x < sdl->win_size.x)
+	while (x < s->win_size.x)
 	{
-		camera = x * 2 / (double)sdl->win_size.x - 1;
-		player->ray.x = player->dir.x + player->plane.x * camera;
-		player->ray.y = player->dir.y + player->plane.y * camera;
-		game->m.x = (int)player->pos.x;
-		game->m.y = (int)player->pos.y;
-		game->delta_dist.x = fabs(1 / player->ray.x);
-		game->delta_dist.y = fabs(1 / player->ray.y);
-		calculate_side_dist(player, game);
-		calculate_strip_wall(player, game);
-		game->wall_size = (int)(sdl->win_size.y / game->wall_dist);
-		game->half_wall_size = game->wall_size / 2;
-		draw_strip_of_wall(x, sdl, game, player);
+		camera = x * 2 / (double)s->win_size.x - 1;
+		s->player->ray.x = s->player->dir.x + s->player->plane.x * camera;
+		s->player->ray.y = s->player->dir.y + s->player->plane.y * camera;
+		s->game->m.x = (int)s->player->pos.x;
+		s->game->m.y = (int)s->player->pos.y;
+		s->game->delta_dist.x = fabs(1 / s->player->ray.x);
+		s->game->delta_dist.y = fabs(1 / s->player->ray.y);
+		calculate_side_dist(s->player, s->game);
+		calculate_strip_wall(s->player, s->game);
+		s->game->wall_size = (int)(s->win_size.y / s->game->wall_dist);
+		s->game->half_wall_size = s->game->wall_size / 2;
+		draw_strip_of_wall(x, s, s->game, s->player);
 		x++;
 	}
 }
@@ -242,15 +242,21 @@ void 			rotate_player(t_player *p, t_vec cos_sin)
 	p->plane.y = oldPlaneX * cos_sin.y + p->plane.y * cos_sin.x;
 }
 
-void 			print_info(t_player *p)
+void 			print_info(t_player	*p, t_sdl *s)
 {
 	printf("\t\t** INFO **\nposition x = %f, y = %f;\ndirection x = %f, y = %f;"    // FORBIDEN FUNCTION
 	"\nray direction x = %f, y = %f;\nplane x = %f, y = %f\n\n", p->pos.x, p->pos.y, 
 	p->dir.x, p->dir.y, p->ray.x, p->ray.y, p->plane.x, p->plane.y);
+	printf("fps  %f\n", (double)(s->end - s->start) / CLOCKS_PER_SEC);
 }
 
-void			make_actions(SDL_Keycode k, t_player *p, t_game *g)
+void			make_actions(SDL_Keycode k, t_sdl *s)
 {
+	t_game		*g;
+	t_player	*p;
+
+	g = s->game;
+	p = s->player;
 	switch (k)
 	{
 		case SDLK_UP:
@@ -272,7 +278,7 @@ void			make_actions(SDL_Keycode k, t_player *p, t_game *g)
 			rotate_player(p, p->min_cos_sin);
 			break ;
 		case SDLK_i :
-			print_info(p);
+			print_info(p,s);
 			break ;
 		case SDLK_c :
 			system("clear");
@@ -290,14 +296,17 @@ int				game_loop(t_sdl *s, t_player *p, t_game *g)
 	tex = NULL;
 	while(1)
 	{
+		s->start = clock();
 		s->surf = SDL_CreateRGBSurface(0, s->win_size.x, s->win_size.y, 32, 0, 0 ,0, 255);
-		build_walls(s, p, g);
+		build_walls(s);
 		if (tex)
 			SDL_DestroyTexture(tex);
 		tex = SDL_CreateTextureFromSurface(s->ren, s->surf);
 		SDL_RenderCopy(s->ren, tex, NULL, NULL);
 		SDL_RenderPresent(s->ren);
 		SDL_FreeSurface(s->surf);
+		s->end = clock();
+	//	printf("fps  %f\n", (double)(s->end - s->start) / CLOCKS_PER_SEC);
 		while (SDL_PollEvent(&e))
 		{
 			if (e.type == SDL_QUIT)
@@ -309,7 +318,7 @@ int				game_loop(t_sdl *s, t_player *p, t_game *g)
 				if (e.key.keysym.sym == SDLK_q)
 					return (MENU);
 				else
-					make_actions(e.key.keysym.sym, p, g);
+					make_actions(e.key.keysym.sym, s);
 			}
 		}
 	}
@@ -325,6 +334,7 @@ int				start_game(t_sdl *sdl, t_game *game)
 	if (!(player = create_player()))
 		return (error_message("Create player"));
 	find_free_place(game, &player->pos);
+	sdl->player = player;
 	ret = game_loop(sdl, player, game);
 	if (ret == MENU)
 		ret = NEW_GAME;

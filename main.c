@@ -8,7 +8,7 @@ int				main(int argc, char **argv)
 
 	if (argc != 2)
 		return (error_exit("need enter path to world map", NULL, NULL));
-	if (!(sdl = new_t_sdl(980, 640)))
+	if (!(sdl = new_t_sdl(1000, 720)))
 		return (error_exit("FATAL", NULL, NULL));
 	sdl->path_map = ft_strdup(argv[1]);
 	if (init_sdl_elem(sdl) == ERROR)
@@ -16,6 +16,7 @@ int				main(int argc, char **argv)
 	if(!(game = create_game(sdl->path_map)))
 		return (error_exit("Failed to create game :(", sdl, game));
 	game->half_win_y = sdl->win_size.y / 2;
+	sdl->game = game;
 	while ((ret = start_game(sdl, game)))
 	{
 		clear_fields_t_game(game);

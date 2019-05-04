@@ -2,19 +2,20 @@
 #define __HEAD_H
 
 #include <fcntl.h>
+#include <time.h>
 #include <math.h>
 #include "libft.h"
 #include "SDL.h"
 
-#define	COUNT_TEXT 9
+#define	COUNT_TEXT 12
 #define TEXTURE_W 64
 #define TEXTURE_H 64
 #define ERROR -1
 #define OK 0
 #define NEW_GAME 2
 #define MENU 3
-#define SPEED 0.2
-#define ROTATE 0.2
+#define SPEED 0.25
+#define ROTATE 0.25
 
 typedef	struct		s_vec
 {
@@ -64,6 +65,8 @@ typedef	struct		s_sdl
 	t_player		*player;
 	t_game			*game;
 	char			*path_map;
+	time_t			start;
+	time_t			end;
 }					t_sdl;
 
 int					init_sdl_elem(t_sdl *s);
