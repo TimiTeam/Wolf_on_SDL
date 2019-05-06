@@ -10,23 +10,6 @@ void 		free_void_map(void **map, int size)
 	free(map);
 }
 
-int					clear_fields_t_game(t_game *g)
-{
-	g->m.x = 0;
-	g->m.y = 0;
-	g->step.x = 0;
-	g->step.y = 0;
-	g->side = 0;
-	g->wall_dist = 0;
-	g->wall_size = 0;
-	g->half_wall_size = 0;
-	g->side_dist.x = 0;
-	g->side_dist.y = 0;
-	g->delta_dist.x = 0;
-	g->delta_dist.y = 0;
-	return (OK);
-}
-
 int 				destroy_game(t_game *g)
 {
 	if (g->w_map)
@@ -44,21 +27,21 @@ int					close_all(t_sdl *s)
 	i = 0;
 	if (s)
 	{
+		SDL_Quit();
 		if (s->win)
 			SDL_DestroyWindow(s->win);
-		while (i < COUNT_TEXT)
+		while (i < COUNT_TEXT && s->walls[i])
 			SDL_FreeSurface(s->walls[i++]);
 		if (s->path_map)
 			ft_strdel(&s->path_map);
 		free(s);
 	}
-	SDL_Quit();
-	ft_putendl("All was destroyed\nGood by :)");
+//	ft_putendl("All was destroyed\nGood by :)");
 //	system("leaks -q test_sdl_wolf");
-	return (0);
+	exit(1);
 }
 
-int					error_exit(char const *mess, t_sdl *s, t_game *g)
+int					error_exit(char const *mess, t_sdl *s, t_game *g, t_player *p)
 {
 	if (mess && *mess)
 	{
@@ -69,11 +52,13 @@ int					error_exit(char const *mess, t_sdl *s, t_game *g)
 		close_all(s);
 	if (g)
 		destroy_game(g);
+	if (p)
+		free(p);
 	return (ERROR);
 }
 
 int					error_message(char const *mes)
 {
-	error_exit(mes, NULL, NULL);
+	error_exit(mes, NULL, NULL, NULL);
 	return (ERROR);
 }

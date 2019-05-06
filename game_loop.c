@@ -1,28 +1,5 @@
 #include "head.h"
 
-void 		find_free_place(t_game *s, t_vec *pos)
-{
-	int 	i;
-	int 	j;
-
-	i = 0;
-	while (i < s->rows)
-	{
-		j = 0;
-		while (j < s->elem[i])
-		{
-			if (s->w_map[i][j] == 0 )
-			{
-				pos->x = i + 0.2;
-				pos->y = j + 0.2;
-				return ;
-			}
-			j++;
-		}
-		i++;
-	}
-}
-
 void 		show_map(int **map, int size, int *rows_size)
 {
 	int 	i;
@@ -60,37 +37,37 @@ int				copy_surf(t_pixel_buf pix_buf)
 	return (0);
 }
 
-void 			floor_ceiling(t_pixel_buf tr, t_sdl *s, t_game *g, t_player *p, double wall_x)
+void 			floor_ceiling(t_pixel_buf tr, t_sdl *s, t_player *p, double wall_x, t_data *d)
 {
 	t_vec		floor_wall;
 	t_vec		curr_pint;
 	double		currentDist;
 	double 		weight;
 
-	if (!g->side && p->ray.x > 0)
+	if (!d->side && d->ray.x > 0)
 	{
-		floor_wall.x = g->m.x;
-		floor_wall.y = g->m.y + wall_x;
+		floor_wall.x = d->move.x;
+		floor_wall.y = d->move.y + wall_x;
 	}
-	else if (!g->side && p->ray.x < 0)
+	else if (!d->side && d->ray.x < 0)
 	{
-		floor_wall.x = g->m.x + 1.0;
-		floor_wall.y = g->m.y + wall_x;
+		floor_wall.x = d->move.x + 1.0;
+		floor_wall.y = d->move.y + wall_x;
 	}
-	else if (g->side && p->ray.y > 0)
+	else if (d->side && d->ray.y > 0)
 	{
-		floor_wall.x = g->m.x + wall_x;
-		floor_wall.y = g->m.y;
+		floor_wall.x = d->move.x + wall_x;
+		floor_wall.y = d->move.y;
 	}
 	else
 	{
-		floor_wall.x = g->m.x + wall_x;
-		floor_wall.y = g->m.y + 1.0;
+		floor_wall.x = d->move.x + wall_x;
+		floor_wall.y = d->move.y + 1.0;
 	}
 	while (tr.from_y <= tr.to_y)
 	{
 		currentDist = s->win_size.y / (2.0 * tr.from_y - s->win_size.y);
-		weight = currentDist / g->wall_dist;
+		weight = currentDist / d->wall_dist;
 		weight = fabs(weight);
 		curr_pint.x = weight * floor_wall.x + (1.0 - weight) * p->pos.x;
 		curr_pint.y = weight * floor_wall.y + (1.0 - weight) * p->pos.y;
@@ -106,44 +83,44 @@ void 			floor_ceiling(t_pixel_buf tr, t_sdl *s, t_game *g, t_player *p, double w
 	}
 }
 
-void 			draw_strip_of_wall(int x, t_sdl *s, t_game *g, t_player *p)
+void 			draw_strip_of_wall(int x, t_sdl *s, t_game *g, t_player *p, t_data *d)
 {
 	int			num_tex;
 	double		wall_x;
-	int			d;
+	int			dt;
 	int			start_y;
 	int			end_y;
 	t_pixel_buf	transport; //
 
-	start_y = -g->half_wall_size + g->half_win_y;
+	start_y = -d->half_wall_size + d->half_win_y;
 	start_y = start_y < 0 ? 0 : start_y;
-	end_y  = g->half_wall_size + g->half_win_y;
+	end_y  = d->half_wall_size + d->half_win_y;
 	end_y  = end_y  >= s->win_size.y ? s->win_size.y - 1 : end_y;
-	num_tex = g->w_map[g->m.y][g->m.x] - 1;
+	num_tex = g->w_map[d->move.y][d->move.x] - 1;
 
 	transport.dst_surf = s->surf;
 	transport.dst_point.x = x;
 	transport.from_y = 0;
-	if (!g->side)
-		wall_x = p->pos.y + g->wall_dist * p->ray.y;
+	if (!d->side)
+		wall_x = p->pos.y + d->wall_dist * d->ray.y;
 	else
-		wall_x = p->pos.x + g->wall_dist * p->ray.x;
+		wall_x = p->pos.x + d->wall_dist * d->ray.x;
 	wall_x -= floor(wall_x);
 	if (start_y > 0)
 	{
 		transport.to_y = start_y;
 		transport.src_surf = s->walls[COUNT_TEXT - 2];
-		floor_ceiling(transport, s, g, p, wall_x);
+		floor_ceiling(transport, s, p, wall_x, d);
 	}
 	transport.src_surf = s->walls[num_tex];
 	transport.src_point.x = (int)(wall_x * (double)TEXTURE_W);
-	if ((g->side == 0 && p->ray.x > 0) || (g->side == 1 && p->ray.y < 0))
+	if ((d->side == 0 && d->ray.x > 0) || (d->side == 1 && d->ray.y < 0))
 		transport.src_point.x = TEXTURE_W - transport.src_point.x - 1;
 	while (start_y < end_y)
 	{
-		d = start_y * 256 - s->win_size.y * 128 + g->wall_size * 128;
+		dt = start_y * 256 - s->win_size.y * 128 + d->wall_size * 128;
 		transport.dst_point.y = start_y;
-		transport.src_point.y = ((d * transport.src_surf->h) / g->wall_size) / 256;
+		transport.src_point.y = ((dt * transport.src_surf->h) / d->wall_size) / 256;
 		copy_surf(transport);
 		start_y++;
 	}
@@ -152,61 +129,61 @@ void 			draw_strip_of_wall(int x, t_sdl *s, t_game *g, t_player *p)
 		transport.from_y = start_y;
 		transport.to_y = s->win_size.y;
 		transport.src_surf = s->walls[COUNT_TEXT - 1];
-		floor_ceiling(transport, s, g, p, wall_x);
+		floor_ceiling(transport, s, p, wall_x, d);
 	}
 }
 
-void			calculate_strip_wall(t_player *p, t_game *game)
+void			calculate_strip_wall(t_player *p, t_game *game, t_data *d)
 {
 	while (1)
 	{
-		if (game->side_dist.x < game->side_dist.y)
+		if (d->side_dist.x < d->side_dist.y)
 		{
-			game->side_dist.x += game->delta_dist.x;
-			game->m.x += game->step.x;
-			game->side = 0;
+			d->side_dist.x += d->delta_dist.x;
+			d->move.x += d->step.x;
+			d->side = 0;
 		}
 		else
 		{
-			game->side_dist.y += game->delta_dist.y;
-			game->m.y += game->step.y;
-			game->side = 1;
+			d->side_dist.y += d->delta_dist.y;
+			d->move.y += d->step.y;
+			d->side = 1;
 		}
-		if (game->w_map[game->m.y][game->m.x] > 0)
+		if (game->w_map[d->move.y][d->move.x] > 0)
 			break ;
 	}
-	if (game->side)
-		game->wall_dist = (game->m.y - p->pos.y + (double)(1 - game->step.y) / 2) / p->ray.y;
+	if (d->side)
+		d->wall_dist = (d->move.y - p->pos.y + (double)(1 - d->step.y) / 2) / d->ray.y;
 	else
-		game->wall_dist = (game->m.x - p->pos.x + (double)(1 - game->step.x) / 2) / p->ray.x;
-	game->wall_dist = game->wall_dist <= 0 ? 1.0 : game->wall_dist;
+		d->wall_dist = (d->move.x - p->pos.x + (double)(1 - d->step.x) / 2) / d->ray.x;
+	d->wall_dist = d->wall_dist <= 0 ? 1.0 : d->wall_dist;
 }
 
-void			calculate_side_dist(t_player *player, t_game *game)
+void			calculate_side_dist(t_player *player, t_game *game, t_data *d)
 {
-	if (player->ray.x < 0)
+	if (d->ray.x < 0)
 	{
-		game->step.x = -1;
-		game->side_dist.x = (player->pos.x - game->m.x) * game->delta_dist.x;
+		d->step.x = -1;
+		d->side_dist.x = (player->pos.x - d->move.x) * d->delta_dist.x;
 	}
 	else
 	{
-		game->step.x = 1;
-		game->side_dist.x = (game->m.x + 1.0 - player->pos.x) * game->delta_dist.x;
+		d->step.x = 1;
+		d->side_dist.x = (d->move.x + 1.0 - player->pos.x) * d->delta_dist.x;
 	}
-	if (player->ray.y < 0)
+	if (d->ray.y < 0)
 	{
-		game->step.y = -1;
-		game->side_dist.y = (player->pos.y - game->m.y) * game->delta_dist.y;
+		d->step.y = -1;
+		d->side_dist.y = (player->pos.y - d->move.y) * d->delta_dist.y;
 	}
 	else
 	{
-		game->step.y = 1;
-		game->side_dist.y = (game->m.y + 1.0 - player->pos.y) * game->delta_dist.y;
+		d->step.y = 1;
+		d->side_dist.y = (d->move.y + 1.0 - player->pos.y) * d->delta_dist.y;
 	}
 }
 
-void 			build_walls(t_sdl *s)
+void 			build_walls(t_sdl *s, t_data *d)
 {
 	double		camera;
 	int			x;
@@ -215,17 +192,17 @@ void 			build_walls(t_sdl *s)
 	while (x < s->win_size.x)
 	{
 		camera = x * 2 / (double)s->win_size.x - 1;
-		s->player->ray.x = s->player->dir.x + s->player->plane.x * camera;
-		s->player->ray.y = s->player->dir.y + s->player->plane.y * camera;
-		s->game->m.x = (int)s->player->pos.x;
-		s->game->m.y = (int)s->player->pos.y;
-		s->game->delta_dist.x = fabs(1 / s->player->ray.x);
-		s->game->delta_dist.y = fabs(1 / s->player->ray.y);
-		calculate_side_dist(s->player, s->game);
-		calculate_strip_wall(s->player, s->game);
-		s->game->wall_size = (int)(s->win_size.y / s->game->wall_dist);
-		s->game->half_wall_size = s->game->wall_size / 2;
-		draw_strip_of_wall(x, s, s->game, s->player);
+		d->ray.x = s->player->dir.x + s->player->plane.x * camera;
+		d->ray.y = s->player->dir.y + s->player->plane.y * camera;
+		d->move.x = (int)s->player->pos.x;
+		d->move.y = (int)s->player->pos.y;
+		d->delta_dist.x = fabs(1 / d->ray.x);
+		d->delta_dist.y = fabs(1 / d->ray.y);
+		calculate_side_dist(s->player, s->game, d);
+		calculate_strip_wall(s->player, s->game, d);
+		d->wall_size = (int)(s->win_size.y / d->wall_dist);
+		d->half_wall_size = d->wall_size / 2;
+		draw_strip_of_wall(x, s, s->game, s->player, d);
 		x++;
 	}
 }
@@ -246,9 +223,10 @@ void 			rotate_player(t_player *p, t_cos_sin cos_sin)
 void 			print_info(t_player	*p, t_sdl *s)
 {
 	printf("\t\t** INFO **\nposition x = %f, y = %f;\ndirection x = %f, y = %f;"    // FORBIDEN FUNCTION
-	"\nray direction x = %f, y = %f;\nplane x = %f, y = %f\n\n", p->pos.x, p->pos.y, 
-	p->dir.x, p->dir.y, p->ray.x, p->ray.y, p->plane.x, p->plane.y);
+	"\nplane x = %f, y = %f\n\n", p->pos.x, p->pos.y, 
+	p->dir.x, p->dir.y, p->plane.x, p->plane.y);
 	printf("fps  %f\n", (double)(s->end - s->start) / CLOCKS_PER_SEC);
+	printf("speed  %f\n", (double)(s->end - s->start) / CLOCKS_PER_SEC * 5.0);
 }
 
 void			make_actions(SDL_Keycode k, t_sdl *s)
@@ -261,16 +239,16 @@ void			make_actions(SDL_Keycode k, t_sdl *s)
 	switch (k)
 	{
 		case SDLK_UP:
-			if (g->w_map[(int)(p->pos.y + p->dir.y * SPEED)][(int)p->pos.x] == 0)
-				p->pos.y += p->dir.y * SPEED;
-			if (g->w_map[(int)p->pos.y][(int)(p->pos.x + p->dir.x * SPEED)] == 0)
-				p->pos.x += p->dir.x * SPEED;
+			if (g->w_map[(int)(p->pos.y + p->dir.y * p->speed)][(int)p->pos.x] == 0)
+				p->pos.y += p->dir.y * p->speed;
+			if (g->w_map[(int)p->pos.y][(int)(p->pos.x + p->dir.x * p->speed)] == 0)
+				p->pos.x += p->dir.x * p->speed;
 			break ;
 		case SDLK_DOWN:
-			if (g->w_map[(int)(p->pos.y - p->dir.y * SPEED)][(int)p->pos.x] == 0)
-				p->pos.y -= p->dir.y * SPEED;
-			if (g->w_map[(int)p->pos.y][(int)(p->pos.x - p->dir.x * SPEED)] == 0)
-				p->pos.x -= p->dir.x * SPEED;
+			if (g->w_map[(int)(p->pos.y - p->dir.y * p->speed)][(int)p->pos.x] == 0)
+				p->pos.y -= p->dir.y * p->speed;
+			if (g->w_map[(int)p->pos.y][(int)(p->pos.x - p->dir.x * p->speed)] == 0)
+				p->pos.x -= p->dir.x * p->speed;
 			break ;
 		case SDLK_LEFT:
 			rotate_player(p, p->plus);
@@ -284,12 +262,15 @@ void			make_actions(SDL_Keycode k, t_sdl *s)
 		case SDLK_c :
 			system("clear");
 			break ;
+		case SDLK_l :
+			system("leaks -q test_sdl_wolf");
+			break ;
 		default:
 			break;
 	}
 }
 
-int				game_loop(t_sdl *s, t_player *p, t_game *g)
+int				game_loop(t_sdl *s, t_player *p, t_game *g, t_data *d)
 {
 	SDL_Event	e;
 	SDL_Texture	*tex;
@@ -299,7 +280,7 @@ int				game_loop(t_sdl *s, t_player *p, t_game *g)
 	{
 		s->start = clock();
 		s->surf = SDL_CreateRGBSurface(0, s->win_size.x, s->win_size.y, 32, 0, 0 ,0, 255);
-		build_walls(s);
+		build_walls(s, d);
 		if (tex)
 			SDL_DestroyTexture(tex);
 		tex = SDL_CreateTextureFromSurface(s->ren, s->surf);
@@ -307,6 +288,7 @@ int				game_loop(t_sdl *s, t_player *p, t_game *g)
 		SDL_RenderPresent(s->ren);
 		SDL_FreeSurface(s->surf);
 		s->end = clock();
+		p->speed = (double)(s->end - s->start) / CLOCKS_PER_SEC * 5.0;
 	//	printf("fps  %f\n", (double)(s->end - s->start) / CLOCKS_PER_SEC);
 		while (SDL_PollEvent(&e))
 		{
@@ -326,19 +308,17 @@ int				game_loop(t_sdl *s, t_player *p, t_game *g)
 	return (1);
 }
 
-int				start_game(t_sdl *sdl, t_game *game)
+int				start_game(t_sdl *sdl, t_game *game, t_player *player)
 {
 	int			ret;
-	t_player 	*player;
+	t_data		*data;
 	
 	ret = 0;
-	if (!(player = create_player()))
-		return (error_message("Create player"));
-	find_free_place(game, &player->pos);
-	sdl->player = player;
-	ret = game_loop(sdl, player, game);
+	data = new_empty_data(sdl);
+	data->half_win_y = sdl->win_size.y / 2;
+	ret = game_loop(sdl, player, game, data);
 	if (ret == MENU)
 		ret = NEW_GAME;
-	free (player);
+	free(data);
 	return (ret);
 }

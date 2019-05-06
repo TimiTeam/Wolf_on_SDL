@@ -14,7 +14,7 @@
 #define OK 0
 #define NEW_GAME 2
 #define MENU 3
-#define SPEED 0.25
+//#define SPEED p->speed
 #define ROTATE 0.25
 
 typedef	struct		s_vec
@@ -50,14 +50,22 @@ typedef struct		s_player
 	t_vec			pos;
 	t_vec			dir;
 	t_vec			plane;
-	t_vec			ray;
 	t_cos_sin		plus;
 	t_cos_sin		minus;
+	double			speed;
 }					t_player;
 
 typedef	struct		s_game
 {
-	t_point			m;
+	int				**w_map;
+	int				rows;
+	int				*elem;
+}					t_game;
+
+typedef struct		s_data
+{
+	t_vec			ray;
+	t_point			move;
 	t_point			step;
 	int				side;
 	double			wall_dist;
@@ -66,10 +74,8 @@ typedef	struct		s_game
 	int				half_win_y;
 	t_vec			side_dist;
 	t_vec			delta_dist;
-	int				**w_map;
-	int				rows;
-	int				*elem;
-}					t_game;
+}					t_data;
+
 
 typedef	struct		s_sdl
 {
@@ -90,14 +96,15 @@ t_sdl				*new_t_sdl(int s_x, int s_y);
 int 				**read_and_save_map(int size, char *pth, int *rows_size);
 t_player			*create_player();
 t_game				*create_game(char *pth_to_map);
+t_data				*new_empty_data();
 
 int					close_all(t_sdl *s);
 int					clear_fields_t_game(t_game *g);
 int 				destroy_game(t_game *g);
-int					error_exit(char	const *mess, t_sdl *s, t_game *g);
+int					error_exit(char	const *mess, t_sdl *s, t_game *g, t_player *p);
 int 				error_message(char const *mes);
 void 				free_void_map(void **map, int size);
 
-int					start_game(t_sdl *s, t_game *g);
+int					start_game(t_sdl *s, t_game *g, t_player *p);
 
 #endif

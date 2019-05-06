@@ -57,13 +57,33 @@ t_sdl			*new_t_sdl(int s_x, int s_y)
 	return (s);
 }
 
+t_data			*new_empty_data()
+{
+	t_data		*d;
+
+	if(!(d = (t_data*)malloc(sizeof(t_data))))
+		return (NULL);
+	d->move.x = 0;
+	d->move.y = 0;
+	d->step.x = 0;
+	d->step.y = 0;
+	d->side = 0;
+	d->wall_dist = 0;
+	d->wall_size = 0;
+	d->half_wall_size = 0;
+	d->side_dist.x = 0;
+	d->side_dist.y = 0;
+	d->delta_dist.x = 0;
+	d->delta_dist.y = 0;
+	return (d);
+}
+
 t_game			*new_fresh_t_game()
 {
 	t_game		*g;
 
 	if(!(g = (t_game*)malloc(sizeof(t_game))))
 		return (NULL);
-	clear_fields_t_game(g);
 	g->w_map = NULL;
 	g->elem = NULL;
 	return (g);
@@ -79,7 +99,7 @@ t_game			*create_game(char *path_to_map)
 	if (((fd = open(path_to_map, O_RDONLY)) < 1 || 
 			(g->rows = get_map_size(fd)) == ERROR))
 	{
-		ft_putstr("Fatal! File not found: ");
+		ft_putstr("File not found: ");
 		ft_putendl(path_to_map);
 		destroy_game(g);
 		return (NULL);
@@ -111,6 +131,7 @@ t_player		*create_player()
 	p->plus.sin = sin(ROTATE);
 	p->minus.cos = cos(-ROTATE);
 	p->minus.sin = sin(-ROTATE);
+	p->speed = 0.21;
 	return (p);
 }
 
@@ -154,8 +175,8 @@ int				load_walls(char *file_list, t_sdl *sdl)
 	}
 	ft_strdel(&name);
 	ft_strdel(&pref);
-	if (i != COUNT_TEXT)
-		return (ERROR);
+//	if (i != COUNT_TEXT)
+//		return (error_message(""));
 	return (0);
 }
 
