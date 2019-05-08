@@ -1,8 +1,8 @@
 #include "head.h"
 
-void 		free_void_map(void **map, int size)
+void 				free_void_map(void **map, int size)
 {
-	int 	i;
+	int 			i;
 
 	i = 0;
 	while (i < size)
@@ -30,18 +30,21 @@ int					close_all(t_sdl *s)
 		SDL_Quit();
 		if (s->win)
 			SDL_DestroyWindow(s->win);
-		while (i < COUNT_TEXT && s->walls[i])
-			SDL_FreeSurface(s->walls[i++]);
+		if (s->img)
+		{
+			while (i < COUNT_TEXT && s->img->walls[i])
+				SDL_FreeSurface(s->img->walls[i++]);
+			free(s->img);
+		}
 		if (s->path_map)
 			ft_strdel(&s->path_map);
 		free(s);
 	}
-//	ft_putendl("All was destroyed\nGood by :)");
-//	system("leaks -q test_sdl_wolf");
+	system("leaks -q test_sdl_wolf");
 	exit(1);
 }
 
-int					error_exit(char const *mess, t_sdl *s, t_game *g, t_player *p)
+int					error_exit(char const *mess, t_sdl *s, t_player *p, t_game *g)
 {
 	if (mess && *mess)
 	{

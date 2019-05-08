@@ -1,6 +1,6 @@
 #include "head.h"
 
-int 		arr_size(char **arr)
+int 				arr_size(char **arr)
 {
 	int		s;
 
@@ -10,7 +10,7 @@ int 		arr_size(char **arr)
 	return (s);
 }
 
-int 		*get_size_and_save(char *line, int *size_row)
+static int 			*get_size_and_save(char *line, int *size_row)
 {
 	int 	j;
 	int 	*dots;
@@ -34,7 +34,7 @@ int 		*get_size_and_save(char *line, int *size_row)
 	return (dots);
 }
 
-int 		**read_and_save_map(int size, char *pth, int *rows_size)
+int 				**read_and_save_map(int size, char *pth, int *rows_size)
 {
 	int 	**arr;
 	char 	*line;
