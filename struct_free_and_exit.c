@@ -45,7 +45,7 @@ int					close_all(t_sdl *s)
 		SDL_Quit();
 	}
 	system("leaks -q test_sdl_wolf");
-	exit(1);
+	return(1);
 }
 
 int					error_exit(char const *mess, t_sdl *s, t_player *p, t_game *g)
@@ -55,12 +55,12 @@ int					error_exit(char const *mess, t_sdl *s, t_player *p, t_game *g)
 		ft_putstr("ERROR: ");
 		ft_putendl(mess);
 	}
-	if (s)
-		close_all(s);
 	if (g)
 		destroy_game(g);
 	if (p)
 		free(p);
+	if (s)
+		close_all(s);
 	return (ERROR);
 }
 
@@ -68,4 +68,3 @@ int					error_message(char const *mes)
 {
 	error_exit(mes, NULL, NULL, NULL);
 	return (ERROR);
-}

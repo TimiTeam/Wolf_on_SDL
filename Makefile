@@ -1,6 +1,6 @@
 NAME = test_sdl_wolf
 
-SRCS = main.c struct_creator.c struct_free_and_exit.c game_loop.c map_worker.c data_and_image.c pixel_worker.c actions.c init_objects.c
+SRCS = main.c struct_creator.c struct_free_and_exit.c game_loop.c map_worker.c data_and_image.c pixel_worker.c actions.c init_objects.c menu.c
 
 OBJS = $(SRCS:.c=.o)
 

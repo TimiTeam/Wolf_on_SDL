@@ -236,7 +236,7 @@ int				game_loop(t_sdl *s, t_player *p, t_game *g)
 			{
 				if (e.key.keysym.sym == SDLK_ESCAPE)
 					return (OK);
-				if (e.key.keysym.sym == SDLK_q)
+				if (e.key.keysym.sym == SDLK_m)
 					return (MENU);
 				else
 					make_actions(e.key.keysym.sym, s, p, g);
