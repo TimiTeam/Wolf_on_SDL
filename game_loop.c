@@ -103,7 +103,7 @@ static void 		draw_strip_of_wall(t_game *g, t_player *p, t_data *d)
 	}
 }
 
-void			calculate_strip_wall(t_player *p, t_game *game, t_data *d)
+static void			calculate_strip_wall(t_player *p, t_game *game, t_data *d)
 {
 	while (1)
 	{
@@ -129,7 +129,7 @@ void			calculate_strip_wall(t_player *p, t_game *game, t_data *d)
 	d->wall_dist = d->wall_dist <= 0 ? 1.0 : d->wall_dist;
 }
 
-void			calculate_side_dist(t_data *d, t_player *player)
+static void			calculate_side_dist(t_data *d, t_player *player)
 {
 	if (d->ray.x < 0)
 	{
@@ -206,7 +206,7 @@ int				run_raycasting_threads(t_sdl *s, t_player *p, t_game *g)
 	return (OK);
 }
 
-static int				game_loop(t_sdl *s, t_player *p, t_game *g)
+int				game_loop(t_sdl *s, t_player *p, t_game *g)
 {
 	SDL_Event	e;
 	SDL_Texture	*tex;
@@ -231,11 +231,11 @@ static int				game_loop(t_sdl *s, t_player *p, t_game *g)
 		while (SDL_PollEvent(&e))
 		{
 			if (e.type == SDL_QUIT)
-				return (0);
+				return (OK);
 			else if (e.type == SDL_KEYDOWN)
 			{
 				if (e.key.keysym.sym == SDLK_ESCAPE)
-					return (0);
+					return (OK);
 				if (e.key.keysym.sym == SDLK_q)
 					return (MENU);
 				else
@@ -244,16 +244,4 @@ static int				game_loop(t_sdl *s, t_player *p, t_game *g)
 		}
 	}
 	return (1);
-}
-
-int				start_game(t_sdl *sdl, t_player *player, t_game *game)
-{
-	int			ret;
-	t_data		*data;
-	
-	ret = 0;
-	ret = game_loop(sdl, player, game);
-	if (ret == MENU)
-		ret = NEW_GAME;
-	return (ret);
 }

@@ -24,23 +24,6 @@ void 			find_free_place(t_game *s, t_vec *pos)
 	}
 }
 
-int				init_objects(t_sdl *s, t_player **p, t_game **g)
-{
-	t_vec		pos;
-
-	*p = NULL;
-	*g = NULL;	
-	if (init_sdl_elem(s) == ERROR)
-		return (error_message(SDL_GetError()));
-	if(!(*g = create_game(s->path_map)))
-		return (error_message("Failed to create game :("));
-	if (!(*p = create_player()))
-		return (error_message("Create player"));
-	find_free_place(*g, &pos);
-	(*p)->pos = pos;
-	return (OK);
-}
-
 int				init_sdl_elem(t_sdl *s)
 {
 	int			flag;
@@ -57,5 +40,27 @@ int				init_sdl_elem(t_sdl *s)
 		return (ERROR);
 	if (!(s->img = create_and_images("res/resurses.txt", s->ren)))
 		return (ERROR);
+	if (!(s->menu = create_and_images("res/menu/list.txt", s->ren)))
+		return (ERROR);
+//	if (!(s->menu->surf = load_surface(s->ren, "res/menu/menu.bmp")))
+//		return (ERROR);
+	s->menu->surf = NULL;
 	return (0);
+}
+
+int				init_objects(t_sdl *s, t_player **p, t_game **g)
+{
+	t_vec		pos;
+
+	*p = NULL;
+	*g = NULL;	
+	if (init_sdl_elem(s) == ERROR)
+		return (error_message(SDL_GetError()));
+	if(!(*g = create_game(s->path_map)))
+		return (error_message("Failed to create game :("));
+	if (!(*p = create_player()))
+		return (error_message("Create player"));
+	find_free_place(*g, &pos);
+	(*p)->pos = pos;
+	return (OK);
 }

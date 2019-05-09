@@ -27,7 +27,6 @@ int					close_all(t_sdl *s)
 	i = 0;
 	if (s)
 	{
-		SDL_Quit();
 		if (s->win)
 			SDL_DestroyWindow(s->win);
 		if (s->img)
@@ -38,7 +37,12 @@ int					close_all(t_sdl *s)
 		}
 		if (s->path_map)
 			ft_strdel(&s->path_map);
+		i = 0;
+		while (i < 3)
+			SDL_FreeSurface(s->menu->walls[i++]);
+		free(s->menu);
 		free(s);
+		SDL_Quit();
 	}
 	system("leaks -q test_sdl_wolf");
 	exit(1);

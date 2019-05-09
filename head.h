@@ -15,6 +15,7 @@
 #define TEXTURE_H 64
 #define ERROR -1
 #define OK 0
+#define CONTINUE 5
 #define NEW_GAME 2
 #define MENU 3
 #define ROTATE 0.13
@@ -82,6 +83,7 @@ typedef	struct		s_sdl
 	SDL_Window		*win;
 	SDL_Renderer	*ren;
 	t_images		*img;
+	t_images		*menu;
 	char			*path_map;
 	time_t			start;
 	time_t			end;
@@ -108,7 +110,6 @@ typedef struct		s_data
 	int				end_x;
 }					t_data;
 
-int					init_sdl_elem(t_sdl *s);
 int					init_objects(t_sdl *s, t_player **p, t_game **g);
 t_sdl				*new_t_sdl(int s_x, int s_y);
 int 				**read_and_save_map(int size, char *pth, int *rows_size);
@@ -116,6 +117,7 @@ t_player			*create_player();
 t_game				*create_game(char *pth_to_map);
 t_data				*create_and_fill(t_sdl *s, int star_x, int step);
 t_images			*create_and_images(char *file_list, SDL_Renderer *ren);
+SDL_Surface			*load_surface(SDL_Renderer *ren, char *pth);
 
 int					close_all(t_sdl *s);
 int 				destroy_game(t_game *g);
@@ -124,7 +126,8 @@ int 				error_message(char const *mes);
 void 				free_void_map(void **map, int size);
 
 void 				find_free_place(t_game *g, t_vec *pos);
-int					start_game(t_sdl *sdl, t_player *player, t_game *game);
+int					game_loop(t_sdl *s, t_player *p, t_game *g);
 void				make_actions(SDL_Keycode k, t_sdl *s, t_player *p, t_game *g);
+int					show_menu(t_sdl *s);
 
 #endif

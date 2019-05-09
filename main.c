@@ -15,7 +15,7 @@ int				main(int argc, char **argv)
 	sdl->path_map = ft_strdup(argv[1]);
 	if (init_objects(sdl, &player, &game))
 		return (error_exit("FATAL ERROR", sdl, player, game));
-	while ((ret = start_game(sdl, player, game)))
+	while ((ret = show_menu(sdl)))
 	{
 		if (ret == NEW_GAME)
 		{
@@ -23,6 +23,8 @@ int				main(int argc, char **argv)
 			player = create_player();
 			find_free_place(game, &player->pos);
 		}
+		if (!game_loop(sdl, player, game))
+			break ;
 	}
 	error_exit(NULL, sdl, player, game);
 	return (0);

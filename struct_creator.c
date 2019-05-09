@@ -84,8 +84,6 @@ t_player			*create_player()
 
 	if(!(p = (t_player*)malloc(sizeof(t_player))))
 		return (NULL);
-	p->pos.x = 22;
-	p->pos.y = 12;
 	p->dir.x = -1;
 	p->dir.y = 0;
 	p->plane.x = 0;
