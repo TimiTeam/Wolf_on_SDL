@@ -41,6 +41,14 @@ static SDL_Surface			*make_menu_surf(SDL_Surface *choice)
 	return (ret);
 }
 
+void                        render_manipulations(SDL_Renderer *ren, SDL_Texture *tex)
+{
+    SDL_RenderClear(ren);
+	SDL_RenderCopy(ren, tex, NULL, NULL);
+	SDL_RenderPresent(ren);
+	SDL_DestroyTexture(tex);
+}
+
 int					        show_menu(t_sdl *s)
 {
 
@@ -51,12 +59,9 @@ int					        show_menu(t_sdl *s)
 	choice = 0;
 	while (1)
 	{
-		SDL_RenderClear(s->ren);
 		s->menu->surf = make_menu_surf(s->menu->walls[choice]);
 		tex = SDL_CreateTextureFromSurface(s->ren, s->menu->surf);
-		SDL_RenderCopy(s->ren, tex, NULL, NULL);
-		SDL_RenderPresent(s->ren);
-		SDL_DestroyTexture(tex);
+        render_manipulations(s->ren, tex);
 		SDL_FreeSurface(s->menu->surf);
 		while (SDL_PollEvent(&e))
 		{

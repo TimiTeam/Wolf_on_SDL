@@ -13,15 +13,6 @@ static void 			rotate_player(t_player *p, t_cos_sin cos_sin)
 	p->plane.y = old_planeX * cos_sin.sin + p->plane.y * cos_sin.cos;
 }
 
-static void 			print_info(t_player	*p, t_sdl *s)
-{
-	printf("\t\t** INFO **\nposition x = %f, y = %f;\ndirection x = %f, y = %f;"    // FORBIDEN FUNCTION
-	"\nplane x = %f, y = %f\n\n", p->pos.x, p->pos.y, 
-	p->dir.x, p->dir.y, p->plane.x, p->plane.y);
-	printf("fps  %f\n", (double)(s->end - s->start) / CLOCKS_PER_SEC);
-	printf("speed  %f\n", (double)(s->end - s->start) / CLOCKS_PER_SEC * 5.0);
-}
-
 void					make_actions(SDL_Keycode k, t_sdl *s, t_player *p, t_game *g)
 {
 	switch (k)
@@ -43,15 +34,6 @@ void					make_actions(SDL_Keycode k, t_sdl *s, t_player *p, t_game *g)
 			break ;
 		case SDLK_RIGHT:
 			rotate_player(p, p->minus);
-			break ;
-		case SDLK_i :
-			print_info(p,s);
-			break ;
-		case SDLK_c :
-			system("clear");
-			break ;
-		case SDLK_l :
-			system("leaks -q test_sdl_wolf");
 			break ;
 		default:
 			break;

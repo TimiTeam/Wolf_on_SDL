@@ -68,3 +68,4 @@ int					error_message(char const *mes)
 {
 	error_exit(mes, NULL, NULL, NULL);
 	return (ERROR);
+}

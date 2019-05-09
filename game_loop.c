@@ -187,6 +187,7 @@ int				run_raycasting_threads(t_sdl *s, t_player *p, t_game *g)
 
 	step = s->win_size.x / THREADS;
 	i = 0;
+	s->img->surf = SDL_CreateRGBSurface(0, s->win_size.x, s->win_size.y, 32, 0, 0 ,0, 255);
 	while (i < THREADS)
 	{
 		if (!(data[i] = create_and_fill(s, i * step, step)))
@@ -215,12 +216,7 @@ int				game_loop(t_sdl *s, t_player *p, t_game *g)
 	while(1)
 	{
 		s->start = clock();
-		s->img->surf = SDL_CreateRGBSurface(0, s->win_size.x, s->win_size.y, 32, 0, 0 ,0, 255);
-		if (SDL_MUSTLOCK(s->img->surf))
-        	SDL_LockSurface(s->img->surf);
 		run_raycasting_threads(s, p, g);
-		if (SDL_MUSTLOCK(s->img->surf))
-        	SDL_UnlockSurface(s->img->surf);
 		tex = SDL_CreateTextureFromSurface(s->ren, s->img->surf);
 		SDL_RenderCopy(s->ren, tex, NULL, NULL);
 		SDL_RenderPresent(s->ren);
