@@ -59,12 +59,13 @@ t_game				*create_game(char *path_to_map)
 
 	if (!(g = (t_game*)malloc(sizeof(t_game))))
 		return (NULL);
+	g->w_map = NULL;
+	g->elem = NULL;
 	if (((fd = open(path_to_map, O_RDONLY)) < 1 || 
 			(g->rows = get_map_size(fd)) == ERROR))
 	{
 		ft_putstr("File not found: ");
 		ft_putendl(path_to_map);
-		destroy_game(g);
 		return (NULL);
 	}
 	close(fd);

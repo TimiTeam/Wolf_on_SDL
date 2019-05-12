@@ -9,7 +9,7 @@
 #include "pixel_worker.h"
 #include <SDL.h>
 
-#define THREADS 4
+#define THREADS 1
 #define	COUNT_TEXT 12
 #define TEXTURE_W 64
 #define TEXTURE_H 64

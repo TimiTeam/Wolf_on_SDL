@@ -35,6 +35,9 @@ void					make_actions(SDL_Keycode k, t_sdl *s, t_player *p, t_game *g)
 		case SDLK_RIGHT:
 			rotate_player(p, p->minus);
 			break ;
+		case SDLK_i:
+			printf("\nplayer dir.x = %f, dir.y = %f\nplane.x = %f, plane.y = %f;\n", p->dir.x, p->dir.y, p->plane.x, p->plane.y);
+			break ;
 		default:
 			break;
 	}

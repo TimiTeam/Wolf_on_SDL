@@ -53,6 +53,20 @@ static void 		floor_ceiling(t_pixel_pos tr, t_data *d, double wall_x)
 	}
 }
 
+static int			get_num_texture(t_data *d)
+{
+	if (d->side == 0 && d->ray.x < 0)
+		return 0;
+	else if (d->side == 0 && d->ray.x > 0)
+		return (1);
+	else if (d->side == 1 && d->ray.y > 0)
+		return (2);
+	else if (d->side == 1 && d->ray.y < 0)
+		return (3);
+	else
+		return (COUNT_TEXT - 1);
+}
+
 static void 		draw_strip_of_wall(t_game *g, t_player *p, t_data *d)
 {
 	Uint32		pixel;
@@ -65,8 +79,9 @@ static void 		draw_strip_of_wall(t_game *g, t_player *p, t_data *d)
 	dist.start = dist.start < 0 ? 0 : dist.start;
 	dist.end = d->half_wall_size + d->half_win_y;
 	dist.end  = dist.end  >= d->win_size.y ? d->win_size.y - 1 : dist.end;
-	d->num_tex = g->w_map[d->move.y][d->move.x] - 1;
 
+	if (!(d->num_tex = g->w_map[d->move.y][d->move.x] - 1))
+		d->num_tex = get_num_texture(d);
 	tr.dst_surf = d->img->surf;
 	tr.dst_point.x = d->start_x;
 	tr.dis.start = 0;
@@ -94,7 +109,7 @@ static void 		draw_strip_of_wall(t_game *g, t_player *p, t_data *d)
 		put_pixel(d->img->surf, d->start_x, dist.start, pixel);
 		dist.start++;
 	}
-	if (dist.start < d->win_size.y)
+	if (dist.end < d->win_size.y)
 	{
 		tr.dis.start = dist.end;
 		tr.dis.end = d->win_size.y;
@@ -198,7 +213,7 @@ int				run_raycasting_threads(t_sdl *s, t_player *p, t_game *g)
 		i++;
 	}
 	i = 0;
-	while (i <= THREADS)
+	while (i < THREADS)
 	{
 		pthread_join(thread[i], NULL);
 		free(data[i]);

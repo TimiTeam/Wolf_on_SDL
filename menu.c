@@ -72,12 +72,14 @@ int					        show_menu(t_sdl *s)
 				switch(e.key.keysym.sym)
 				{
 					case (SDLK_UP):
-						if (choice > 0)
-							--choice;
+						--choice;
+						if (choice < 0)
+							choice = 2;
 						break ;
 					case (SDLK_DOWN):
-						if (choice < 2)
-							++choice;
+						++choice;
+						if (choice > 2)
+							choice = 0;
 						break ;
 					case (SDLK_RETURN):
 						if (choice == 2)
