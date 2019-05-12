@@ -33,7 +33,7 @@ static void 		floor_ceiling(t_pixel_pos tr, t_data *d, double wall_x)
 	Uint32			pixel;
 
 	find_side(&point, d, wall_x);
-	while (tr.dis.start< tr.dis.end)
+	while (tr.dis.start < tr.dis.end)
 	{
 		currentDist = d->win_size.y / (2.0 * tr.dis.start - d->win_size.y);
 		weight = currentDist / d->wall_dist;
@@ -82,6 +82,8 @@ static void 		draw_strip_of_wall(t_game *g, t_player *p, t_data *d)
 
 	if (!(d->num_tex = g->w_map[d->move.y][d->move.x] - 1))
 		d->num_tex = get_num_texture(d);
+	if (d->num_tex >= COUNT_TEXT)
+		d->num_tex = COUNT_TEXT - 1;
 	tr.dst_surf = d->img->surf;
 	tr.dst_point.x = d->start_x;
 	tr.dis.start = 0;

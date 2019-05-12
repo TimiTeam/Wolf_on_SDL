@@ -10,7 +10,7 @@
 #include <SDL.h>
 
 #define THREADS 1
-#define	COUNT_TEXT 12
+#define	COUNT_TEXT 9
 #define TEXTURE_W 64
 #define TEXTURE_H 64
 #define ERROR -1

@@ -38,12 +38,10 @@ int				init_sdl_elem(t_sdl *s)
 	s->ren = SDL_CreateRenderer(s->win, -1, flag);
 	if (!s->ren)
 		return (ERROR);
-	if (!(s->img = create_and_images("res/resurses.txt", s->ren)))
+	if (!(s->img = create_and_images("res/res.txt", s->ren)))
 		return (ERROR);
 	if (!(s->menu = create_and_images("res/menu/list.txt", s->ren)))
 		return (ERROR);
-//	if (!(s->menu->surf = load_surface(s->ren, "res/menu/menu.bmp")))
-//		return (ERROR);
 	s->menu->surf = NULL;
 	return (0);
 }
