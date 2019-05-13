@@ -78,7 +78,7 @@ static void 		draw_strip_of_wall(t_game *g, t_player *p, t_data *d)
 	dist.start = -d->half_wall_size + d->half_win_y;
 	dist.start = dist.start < 0 ? 0 : dist.start;
 	dist.end = d->half_wall_size + d->half_win_y;
-	dist.end  = dist.end  >= d->win_size.y ? d->win_size.y - 1 : dist.end;
+	dist.end  = dist.end  >= d->win_size.y ? d->win_size.y : dist.end;
 
 	if (!(d->num_tex = g->w_map[d->move.y][d->move.x] - 1))
 		d->num_tex = get_num_texture(d);
@@ -95,7 +95,7 @@ static void 		draw_strip_of_wall(t_game *g, t_player *p, t_data *d)
 	if (dist.start > 0)
 	{
 		tr.dis.end = dist.start;
-		tr.src_surf = d->img->walls[COUNT_TEXT - 2];
+		tr.src_surf = d->img->walls[d->game->ceiling];
 		floor_ceiling(tr, d, wall_x);
 	}
 	tr.src_surf = d->img->walls[d->num_tex];
@@ -115,7 +115,7 @@ static void 		draw_strip_of_wall(t_game *g, t_player *p, t_data *d)
 	{
 		tr.dis.start = dist.end;
 		tr.dis.end = d->win_size.y;
-		tr.src_surf = d->img->walls[COUNT_TEXT - 1];
+		tr.src_surf = d->img->walls[d->game->floor];
 		floor_ceiling(tr, d, wall_x);
 	}
 }
@@ -252,7 +252,8 @@ int				game_loop(t_sdl *s, t_player *p, t_game *g)
 				if (e.key.keysym.sym == SDLK_m)
 					return (MENU);
 				else
-					make_actions(e.key.keysym.sym, s, p, g);
+					if(make_actions(e.key.keysym.sym, s, p, g) == NEW_GAME)
+						return (NEW_GAME);
 			}
 		}
 	}

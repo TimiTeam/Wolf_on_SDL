@@ -3,7 +3,13 @@ wall_two.bmp
 greystone.bmp
 mossy.bmp
 door.bmp
-greenlight.bmp
+redbrick.bmp
+eagle.bmp
+wall_three.bmp
+wall_three_shadow.bmp
+prison.bmp
 cloud_sky.bmp
+wood.bmp
+colorstone.bmp
 clear_sky.bmp
 ground.bmp

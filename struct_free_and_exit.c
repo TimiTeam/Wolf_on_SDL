@@ -35,11 +35,14 @@ int					close_all(t_sdl *s)
 				SDL_FreeSurface(s->img->walls[i++]);
 			free(s->img);
 		}
-		if (s->path_map)
-			ft_strdel(&s->path_map);
 		i = 0;
 		while (i < 3)
 			SDL_FreeSurface(s->menu->walls[i++]);
+		i = 0;
+		while (s->maps[i])
+			ft_strdel(&s->maps[i++]);
+		if (s->maps)
+			free(s->maps);
 		free(s->menu);
 		free(s);
 		SDL_Quit();

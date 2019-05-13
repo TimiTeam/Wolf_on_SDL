@@ -10,7 +10,7 @@
 #include <SDL.h>
 
 #define THREADS 1
-#define	COUNT_TEXT 9
+#define	COUNT_TEXT 15
 #define TEXTURE_W 64
 #define TEXTURE_H 64
 #define ERROR -1
@@ -68,6 +68,8 @@ typedef	struct		s_game
 	int				**w_map;
 	int				rows;
 	int				*elem;
+	int				floor;
+	int				ceiling;
 }					t_game;
 
 typedef	struct		s_images
@@ -84,7 +86,9 @@ typedef	struct		s_sdl
 	SDL_Renderer	*ren;
 	t_images		*img;
 	t_images		*menu;
-	char			*path_map;
+	char			**maps;
+	int				map;
+	int				count_maps;
 	time_t			start;
 	time_t			end;
 }					t_sdl;
@@ -110,6 +114,8 @@ typedef struct		s_data
 	int				end_x;
 }					t_data;
 
+
+int					init_sdl_elem(t_sdl *s);
 int					init_objects(t_sdl *s, t_player **p, t_game **g);
 t_sdl				*new_t_sdl(int s_x, int s_y);
 int 				**read_and_save_map(int size, char *pth, int *rows_size);
@@ -124,10 +130,12 @@ int 				destroy_game(t_game *g);
 int					error_exit(char const *mess, t_sdl *s, t_player *p, t_game *g);
 int 				error_message(char const *mes);
 void 				free_void_map(void **map, int size);
+int 				arr_size(char **arr);
 
 void 				find_free_place(t_game *g, t_vec *pos);
 int					game_loop(t_sdl *s, t_player *p, t_game *g);
-void				make_actions(SDL_Keycode k, t_sdl *s, t_player *p, t_game *g);
+int					make_actions(SDL_Keycode k, t_sdl *s, t_player *p, t_game *g);
 int					show_menu(t_sdl *s);
+
 
 #endif

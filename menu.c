@@ -87,7 +87,10 @@ int					        show_menu(t_sdl *s)
 						else if (choice == 1)
 							return (CONTINUE);
 						else if (choice == 0)
+						{
+							s->map = 0;
 							return (NEW_GAME);
+						}
 					case (SDLK_ESCAPE):
 						return (OK);
 				}

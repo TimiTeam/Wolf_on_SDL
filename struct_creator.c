@@ -12,7 +12,8 @@ t_sdl			*new_t_sdl(int s_x, int s_y)
 	s->win = NULL;
 	s->ren = NULL;
 	s->img = NULL;
-	s->path_map = NULL;
+	s->map = 0;
+	s->maps = NULL;
 	i = 0;
 	return (s);
 }
@@ -31,7 +32,7 @@ static int			check_line(char *l)
 	return (0);
 }
 
-static int 			get_map_size(int fd)
+int 			get_map_size(int fd)
 {
 	char 			*line;
 	int 			s;
