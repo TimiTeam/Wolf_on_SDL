@@ -1,8 +1,20 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   map_worker.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: tbujalo <marvin@42.fr>                     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2019/05/14 19:51:54 by tbujalo           #+#    #+#             */
+/*   Updated: 2019/05/14 19:53:43 by tbujalo          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "head.h"
 
-int 				arr_size(char **arr)
+int				arr_size(char **arr)
 {
-	int		s;
+	int			s;
 
 	s = 0;
 	while (arr[s])
@@ -10,11 +22,11 @@ int 				arr_size(char **arr)
 	return (s);
 }
 
-static int 			*get_size_and_save(char *line, int *size_row)
+static int		*get_size_and_save(char *line, int *size_row)
 {
-	int 	j;
-	int 	*dots;
-	char 	**ch_dost;
+	int			j;
+	int			*dots;
+	char		**ch_dost;
 
 	if (ft_strchr(line, ' '))
 		ch_dost = ft_strsplit(line, ' ');
@@ -34,12 +46,12 @@ static int 			*get_size_and_save(char *line, int *size_row)
 	return (dots);
 }
 
-int 				**read_and_save_map(int size, char *pth, int *rows_size)
+int				**read_and_save_map(int size, char *pth, int *rows_size)
 {
-	int 	**arr;
-	char 	*line;
-	int 	fd;
-	int 	i;
+	int			**arr;
+	char		*line;
+	int			fd;
+	int			i;
 
 	arr = (int**)malloc(sizeof(int*) * size);
 	i = 0;

@@ -1,5 +1,16 @@
-#include "head.h"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   main.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: tbujalo <marvin@42.fr>                     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2019/05/14 19:46:55 by tbujalo           #+#    #+#             */
+/*   Updated: 2019/05/14 19:47:05 by tbujalo          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
+#include "head.h"
 
 int				main(int argc, char **argv)
 {
@@ -13,18 +24,17 @@ int				main(int argc, char **argv)
 	if (init_sdl_elem(sdl) == ERROR)
 		return (error_message(SDL_GetError()));
 	ret = MENU;
-	while (ret)
+	while (ret != EXIT)
 	{
 		if (ret == MENU)
 			ret = show_menu(sdl);
 		if (ret == NEW_GAME)
 		{
 			error_exit(NULL, NULL, player, game);
-			sdl->map = sdl->map >= sdl->count_maps ? 0 : sdl->map;
-			if(init_objects(sdl, &player, &game) == ERROR)
+			if (init_objects(sdl, &player, &game) == ERROR)
 				return (error_exit("ERROR", sdl, player, game));
 		}
-		if (ret)
+		if (ret != EXIT)
 			ret = game_loop(sdl, player, game);
 	}
 	error_exit(NULL, sdl, player, game);

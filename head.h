@@ -9,28 +9,21 @@
 #include "pixel_worker.h"
 #include <SDL.h>
 
-#define THREADS 1
-#define	COUNT_TEXT 15
-#define TEXTURE_W 64
-#define TEXTURE_H 64
+#define THREADS 4
+#define	CO_TEXT 15
 #define ERROR -1
 #define OK 0
-#define CONTINUE 5
+#define EXIT 1
 #define NEW_GAME 2
 #define MENU 3
-#define ROTATE 0.13
+#define CONTINUE 5
+#define ROTATE 0.121
 
 typedef	struct		s_vec
 {
 	double			x;
 	double			y;
 }					t_vec;
-
-typedef	struct		s_point
-{
-	int				x;
-	int				y;
-}					t_point;
 
 typedef	struct 		s_distance
 {
@@ -74,7 +67,7 @@ typedef	struct		s_game
 
 typedef	struct		s_images
 {
-	SDL_Surface		*walls[COUNT_TEXT];
+	SDL_Surface		*walls[CO_TEXT];
 	SDL_Surface		*surf;
 }					t_images;
 
@@ -89,6 +82,7 @@ typedef	struct		s_sdl
 	char			**maps;
 	int				map;
 	int				count_maps;
+	int				in_game;
 	time_t			start;
 	time_t			end;
 }					t_sdl;

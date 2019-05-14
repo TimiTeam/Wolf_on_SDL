@@ -47,8 +47,8 @@ static void 		floor_ceiling(t_pixel_pos tr, t_data *d, double wall_x)
 		if (tr.src_point.x < 0)
 			tr.src_point.x *= -1;
 		tr.dst_point.y = tr.dis.start;
-		pixel = get_pixel(tr.src_surf, tr.src_point.x, tr.src_point.y);
-		put_pixel(tr.dst_surf, tr.dst_point.x, tr.dst_point.y, pixel);
+		pixel = get_pixel(tr.src_surf, tr.src_point);
+		put_pixel(tr.dst_surf, tr.dst_point, pixel);
 		tr.dis.start++;
 	}
 }
@@ -64,16 +64,16 @@ static int			get_num_texture(t_data *d)
 	else if (d->side == 1 && d->ray.y < 0)
 		return (3);
 	else
-		return (COUNT_TEXT - 1);
+		return (CO_TEXT - 1);
 }
 
 static void 		draw_strip_of_wall(t_game *g, t_player *p, t_data *d)
 {
-	Uint32		pixel;
-	double		wall_x;
-	int			dt;
-	t_distance	dist;
-	t_pixel_pos	tr;
+	Uint32			pixel;
+	double			wall_x;
+	int				dt;
+	t_distance		dist;
+	t_pixel_pos		tr;
 
 	dist.start = -d->half_wall_size + d->half_win_y;
 	dist.start = dist.start < 0 ? 0 : dist.start;
@@ -82,8 +82,8 @@ static void 		draw_strip_of_wall(t_game *g, t_player *p, t_data *d)
 
 	if (!(d->num_tex = g->w_map[d->move.y][d->move.x] - 1))
 		d->num_tex = get_num_texture(d);
-	if (d->num_tex >= COUNT_TEXT)
-		d->num_tex = COUNT_TEXT - 1;
+	if (d->num_tex >= CO_TEXT)
+		d->num_tex = CO_TEXT - 1;
 	tr.dst_surf = d->img->surf;
 	tr.dst_point.x = d->start_x;
 	tr.dis.start = 0;
@@ -99,16 +99,16 @@ static void 		draw_strip_of_wall(t_game *g, t_player *p, t_data *d)
 		floor_ceiling(tr, d, wall_x);
 	}
 	tr.src_surf = d->img->walls[d->num_tex];
-	tr.src_point.x = (int)(wall_x * (double)TEXTURE_W);
+	tr.src_point.x = (int)(wall_x * (double)tr.src_surf->w);
 	if ((d->side == 0 && d->ray.x > 0) || (d->side == 1 && d->ray.y < 0))
-		tr.src_point.x = TEXTURE_W - tr.src_point.x - 1;
+		tr.src_point.x = tr.src_surf->w - tr.src_point.x - 1;
 	while (dist.start < dist.end)
 	{
 		dt = dist.start * 256 - d->win_size.y * 128 + d->wall_size * 128;
 		tr.dst_point.y = dist.start;
 		tr.src_point.y = ((dt * tr.src_surf->h) / d->wall_size) / 256;
-		pixel = get_pixel(d->img->walls[d->num_tex], tr.src_point.x, tr.src_point.y);
-		put_pixel(d->img->surf, d->start_x, dist.start, pixel);
+		pixel = get_pixel(d->img->walls[d->num_tex], tr.src_point);
+		put_pixel(d->img->surf, tr.dst_point, pixel);
 		dist.start++;
 	}
 	if (dist.end < d->win_size.y)
@@ -178,7 +178,7 @@ static void 			*build_walls(void *param)
 	d = (t_data*)param;
 	while (d->start_x < d->end_x)
 	{
-		camera = d->start_x * 2 / (double)d->win_size.x - 1;
+		camera = (d->start_x << 1) / (double)d->win_size.x - 1;
 		d->ray.x = d->player->dir.x + d->player->plane.x * camera;
 		d->ray.y = d->player->dir.y + d->player->plane.y * camera;
 		d->move.x = (int)d->player->pos.x;
@@ -188,7 +188,7 @@ static void 			*build_walls(void *param)
 		calculate_side_dist(d, d->player);
 		calculate_strip_wall(d->player, d->game, d);
 		d->wall_size = (int)(d->win_size.y / d->wall_dist);
-		d->half_wall_size = d->wall_size / 2;
+		d->half_wall_size = d->wall_size >> 1;
 		draw_strip_of_wall(d->game, d->player, d);
 		d->start_x++;
 	}
@@ -202,7 +202,7 @@ int				run_raycasting_threads(t_sdl *s, t_player *p, t_game *g)
 	int			i;
 	int			step;
 
-	step = s->win_size.x / THREADS;
+	step = s->win_size.x / THREADS - 1;
 	i = 0;
 	s->img->surf = SDL_CreateRGBSurface(0, s->win_size.x, s->win_size.y, 32, 0, 0 ,0, 255);
 	while (i < THREADS)
@@ -244,11 +244,11 @@ int				game_loop(t_sdl *s, t_player *p, t_game *g)
 		while (SDL_PollEvent(&e))
 		{
 			if (e.type == SDL_QUIT)
-				return (OK);
+				return (EXIT);
 			else if (e.type == SDL_KEYDOWN)
 			{
 				if (e.key.keysym.sym == SDLK_ESCAPE)
-					return (OK);
+					return (EXIT);
 				if (e.key.keysym.sym == SDLK_m)
 					return (MENU);
 				else

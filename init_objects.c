@@ -1,10 +1,21 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   init_objects.c                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: tbujalo <marvin@42.fr>                     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2019/05/14 18:58:05 by tbujalo           #+#    #+#             */
+/*   Updated: 2019/05/14 19:02:20 by tbujalo          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "head.h"
 
-
-void 			find_free_place(t_game *s, t_vec *pos)
+void			find_free_place(t_game *s, t_vec *pos)
 {
-	int 		i;
-	int 		j;
+	int			i;
+	int			j;
 
 	i = 0;
 	while (i < s->rows)
@@ -12,7 +23,7 @@ void 			find_free_place(t_game *s, t_vec *pos)
 		j = 0;
 		while (j < s->elem[i])
 		{
-			if (s->w_map[i][j] == 0 )
+			if (s->w_map[i][j] == 0)
 			{
 				pos->x = i + 0.2;
 				pos->y = j + 0.2;
@@ -36,13 +47,13 @@ char			**read_maps_path(char *file_name)
 		ft_putendl(file_name);
 		return (NULL);
 	}
-	if((rd = read(fd, &buf, 256)) < 1)
+	if ((rd = read(fd, &buf, 256)) < 1)
 	{
 		ft_putstr("File is broken\n");
 		return (NULL);
 	}
 	buf[rd] = '\0';
-	return(ft_strsplit(buf, '\n'));
+	return (ft_strsplit(buf, '\n'));
 }
 
 int				init_sdl_elem(t_sdl *s)
@@ -76,10 +87,12 @@ int				init_objects(t_sdl *s, t_player **p, t_game **g)
 
 	*p = NULL;
 	*g = NULL;
-	if(!(*g = create_game(s->maps[s->map])))
+	s->in_game = 1;
+	s->map = s->map >= s->count_maps ? 0 : s->map;
+	if (!(*g = create_game(s->maps[s->map])))
 		return (error_message("Failed to create game :("));
-	(*g)->floor = s->map == s->count_maps - 1 ? COUNT_TEXT - 1 : COUNT_TEXT - 3;
-	(*g)->ceiling = s->map == s->count_maps - 1 ? COUNT_TEXT - 2 : COUNT_TEXT - 4;
+	(*g)->floor = s->map == s->count_maps - 1 ? CO_TEXT - 1 : CO_TEXT - 3;
+	(*g)->ceiling = s->map == s->count_maps - 1 ? CO_TEXT - 2 : CO_TEXT - 4;
 	if (!(*p = create_player()))
 		return (error_message("Create player"));
 	find_free_place(*g, &pos);
