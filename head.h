@@ -17,7 +17,7 @@
 #define NEW_GAME 2
 #define MENU 3
 #define CONTINUE 5
-#define ROTATE 0.121
+#define ROTATE 0.171
 
 typedef	struct		s_vec
 {
@@ -108,9 +108,10 @@ typedef struct		s_data
 	int				end_x;
 }					t_data;
 
-
-int					init_sdl_elem(t_sdl *s);
+int				fill_new_t_game(t_game *g, char *path_to_map);
+int				fill_new_t_player(t_player *p);
 int					init_objects(t_sdl *s, t_player **p, t_game **g);
+int				new_clear_objects(t_sdl *s, t_player *p, t_game *g);
 t_sdl				*new_t_sdl(int s_x, int s_y);
 int 				**read_and_save_map(int size, char *pth, int *rows_size);
 t_player			*create_player();
@@ -121,8 +122,8 @@ SDL_Surface			*load_surface(SDL_Renderer *ren, char *pth);
 
 int					close_all(t_sdl *s);
 int 				destroy_game(t_game *g);
-int					error_exit(char const *mess, t_sdl *s, t_player *p, t_game *g);
-int 				error_message(char const *mes);
+int					exit_x(t_sdl *s, t_player *p, t_game *g);
+int 				error_message(char const *mes, t_sdl *s, t_player *p, t_game  *g);
 void 				free_void_map(void **map, int size);
 int 				arr_size(char **arr);
 

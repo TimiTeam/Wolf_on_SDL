@@ -1,4 +1,4 @@
-NAME = test_sdl_wolf
+NAME = wolf3d
 
 SRCS = main.c struct_creator.c struct_free_and_exit.c game_loop.c map_worker.c data_and_image.c pixel_worker.c actions.c init_objects.c menu.c
 
@@ -22,7 +22,7 @@ compile: $(SRCS) $(LIBFT_A)
 	clang -g -pthread $(SRCS) $(SDL_INCL) $(SDL_RUN_FLAGS) $(LFT_INCL) -o $(NAME)
 
 compile_linux: $(SRCS) $(LIBFT_A)
-	clang -g $(SRCS) $(SDL_INCL_LINUX) $(LFT_INCL) -lm -o $(NAME)
+	clang -g -pthread $(SRCS) $(SDL_INCL_LINUX) $(LFT_INCL) -lm -o $(NAME)
 
 compile_lib: libft/
 	make -C libft/

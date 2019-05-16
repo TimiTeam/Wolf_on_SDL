@@ -22,6 +22,7 @@ int				arr_size(char **arr)
 	return (s);
 }
 
+
 static int		*get_size_and_save(char *line, int *size_row)
 {
 	int			j;
@@ -42,7 +43,7 @@ static int		*get_size_and_save(char *line, int *size_row)
 		dots[j] = ft_atoi(ch_dost[j]);
 		j++;
 	}
-	free_void_map((void*)ch_dost, *size_row);
+	free_void_map((void**)ch_dost, *size_row);
 	return (dots);
 }
 

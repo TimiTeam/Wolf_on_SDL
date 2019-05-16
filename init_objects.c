@@ -87,15 +87,32 @@ int				init_objects(t_sdl *s, t_player **p, t_game **g)
 
 	*p = NULL;
 	*g = NULL;
-	s->in_game = 1;
-	s->map = s->map >= s->count_maps ? 0 : s->map;
-	if (!(*g = create_game(s->maps[s->map])))
-		return (error_message("Failed to create game :("));
-	(*g)->floor = s->map == s->count_maps - 1 ? CO_TEXT - 1 : CO_TEXT - 3;
-	(*g)->ceiling = s->map == s->count_maps - 1 ? CO_TEXT - 2 : CO_TEXT - 4;
+	if (init_sdl_elem(s) == ERROR)
+		return (error_message(SDL_GetError(), s, NULL, NULL));
+	if (!(*g = create_game(NULL)))
+		return (error_message("Failed to create game", s, NULL, *g));
 	if (!(*p = create_player()))
-		return (error_message("Create player"));
-	find_free_place(*g, &pos);
-	(*p)->pos = pos;
+		return (error_message("Failed to create player", s, *p, *g));
+	return (OK);
+}
+
+int				new_clear_objects(t_sdl *s, t_player *p, t_game *g)
+{
+	if (!s || !p || !g)
+		return (error_message("Missing main objects\n", s, p, g));
+	if (g->w_map)
+		free_void_map((void**)g->w_map, g->rows);
+	if (g->elem)
+		free(g->elem);
+	g->w_map = NULL;
+	g->elem = NULL;
+	s->map = s->map >= s->count_maps ? 0 : s->map;
+	if(fill_new_t_game(g, s->maps[s->map]) == ERROR)
+		error_message("Can't create Game", s, p, g);
+	g->floor = s->map == s->count_maps - 1 ? CO_TEXT - 1 : CO_TEXT - 3;
+	g->ceiling = s->map == s->count_maps - 1 ? CO_TEXT - 2 : CO_TEXT - 4;
+	fill_new_t_player(p);
+	find_free_place (g, &p->pos);
+	s->in_game = 1;
 	return (OK);
 }

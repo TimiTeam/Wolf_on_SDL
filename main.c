@@ -20,9 +20,9 @@ int				main(int argc, char **argv)
 	t_game		*game;
 
 	if (!(sdl = new_t_sdl(1024, 720)))
-		return (error_message("FATAL"));
-	if (init_sdl_elem(sdl) == ERROR)
-		return (error_message(SDL_GetError()));
+		return (error_message("FATAL", NULL, NULL, NULL));
+	if (init_objects(sdl, &player, &game) == ERROR)
+		return (1);
 	ret = MENU;
 	while (ret != EXIT)
 	{
@@ -30,13 +30,12 @@ int				main(int argc, char **argv)
 			ret = show_menu(sdl);
 		if (ret == NEW_GAME)
 		{
-			error_exit(NULL, NULL, player, game);
-			if (init_objects(sdl, &player, &game) == ERROR)
-				return (error_exit("ERROR", sdl, player, game));
+			if (new_clear_objects(sdl, player, game) == ERROR)
+				return (1);
 		}
 		if (ret != EXIT)
 			ret = game_loop(sdl, player, game);
 	}
-	error_exit(NULL, sdl, player, game);
+	exit_x (sdl, player, game);
 	return (0);
 }

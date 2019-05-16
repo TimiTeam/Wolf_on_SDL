@@ -240,7 +240,7 @@ int				game_loop(t_sdl *s, t_player *p, t_game *g)
 		SDL_FreeSurface(s->img->surf);
 		SDL_DestroyTexture(tex);
 		s->end = clock();
-		p->speed = (double)(s->end - s->start) / CLOCKS_PER_SEC * 5.0;
+		p->speed = (double)(s->end - s->start) / CLOCKS_PER_SEC * 3.0;
 		while (SDL_PollEvent(&e))
 		{
 			if (e.type == SDL_QUIT)

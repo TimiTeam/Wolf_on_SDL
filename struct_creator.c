@@ -65,39 +65,58 @@ int				get_map_size(int fd)
 	return (s);
 }
 
-t_game			*create_game(char *path_to_map)
+int			fill_new_t_game(t_game *g, char *path_to_map)
 {
-	t_game		*g;
-	int			fd;
-
-	if (!(g = (t_game*)malloc(sizeof(t_game))))
-		return (NULL);
-	g->w_map = NULL;
-	g->elem = NULL;
+	int		fd;
+	if (!g)
+	{
+		ft_putstr("Need create t_game struct\n");
+		return (ERROR);
+	}
+	if (g->w_map)
+	{
+		ft_putstr("Map need to be crear\n");
+		return (ERROR);
+	}
 	if (((fd = open(path_to_map, O_RDONLY)) < 1 ||
 			(g->rows = get_map_size(fd)) == ERROR))
 	{
 		ft_putstr("File not found: ");
 		ft_putendl(path_to_map);
-		return (NULL);
+		return (ERROR);
 	}
 	close(fd);
 	g->elem = (int*)malloc(sizeof(int) * g->rows);
 	if (!(g->w_map = read_and_save_map(g->rows, path_to_map, g->elem)))
 	{
-		error_message("Wrong file or file is broken");
-		destroy_game(g);
+		ft_putstr("Wrong file or file is broken\n");
+		return (ERROR);
+	}
+	return (OK);
+}
+
+t_game			*create_game(char *map_name)
+{
+	t_game		*g;
+
+	if (!(g = (t_game*)malloc(sizeof(t_game))))
 		return (NULL);
+	g->rows = 0;
+	g->w_map = NULL;
+	g->elem = NULL;
+	if (map_name)
+	{
+		if (fill_new_t_game(g, map_name) == ERROR)
+			destroy_game (g);
 	}
 	return (g);
 }
 
-t_player		*create_player(void)
-{
-	t_player	*p;
 
-	if (!(p = (t_player*)malloc(sizeof(t_player))))
-		return (NULL);
+int			fill_new_t_player(t_player *p)
+{
+	if (!p)
+		return (ERROR);
 	p->dir.x = -1;
 	p->dir.y = 0;
 	p->plane.x = 0;
@@ -106,6 +125,17 @@ t_player		*create_player(void)
 	p->plus.sin = sin(ROTATE);
 	p->minus.cos = cos(-ROTATE);
 	p->minus.sin = sin(-ROTATE);
-	p->speed = 0.21;
+	p->speed = 0.091;
+	return (OK);
+}
+
+t_player		*create_player(void)
+{
+	t_player	*p;
+
+	if (!(p = (t_player*)malloc(sizeof(t_player))))
+		return (NULL);
+	if (fill_new_t_player(p) == ERROR)
+		return (NULL);
 	return (p);
 }

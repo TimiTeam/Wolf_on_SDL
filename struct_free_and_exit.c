@@ -18,8 +18,12 @@ void			free_void_map(void **map, int size)
 
 	i = 0;
 	while (i < size)
-		free(map[i++]);
+	{
+		free(map[i]);
+		map[i++] = NULL;
+	}
 	free(map);
+	map[i] = NULL;
 }
 
 int				destroy_game(t_game *g)
@@ -28,7 +32,9 @@ int				destroy_game(t_game *g)
 		free_void_map((void**)g->w_map, g->rows);
 	if (g->elem)
 		free(g->elem);
+	g->elem = NULL;
 	free(g);
+	g = NULL;
 	return (OK);
 }
 
@@ -56,17 +62,11 @@ int				close_all(t_sdl *s)
 	free(s->menu);
 	free(s);
 	SDL_Quit();
-	system("leaks -q test_sdl_wolf");
 	return (1);
 }
 
-int				error_exit(char const *mess, t_sdl *s, t_player *p, t_game *g)
+int				exit_x(t_sdl *s, t_player *p, t_game *g)
 {
-	if (mess && *mess)
-	{
-		ft_putstr("ERROR: ");
-		ft_putendl(mess);
-	}
 	if (g)
 		destroy_game(g);
 	if (p)
@@ -76,8 +76,13 @@ int				error_exit(char const *mess, t_sdl *s, t_player *p, t_game *g)
 	return (ERROR);
 }
 
-int				error_message(char const *mes)
+int				error_message(char const *mess, t_sdl *s, t_player *p, t_game *g)
 {
-	error_exit(mes, NULL, NULL, NULL);
+	if (mess)
+	{
+		ft_putstr("ERROR: ");
+		ft_putendl(mess);
+	}
+	exit_x(s, p, g);
 	return (ERROR);
 }
