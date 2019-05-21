@@ -17,7 +17,7 @@ t_sdl			*new_t_sdl(int s_x, int s_y)
 	t_sdl		*s;
 	int			i;
 
-	if (!(s = (t_sdl*)malloc(sizeof(t_sdl))))
+	if (!(s = (t_sdl*)ft_memalloc(sizeof(t_sdl))))
 		return (NULL);
 	s->win_size.x = s_x;
 	s->win_size.y = s_y;
@@ -86,7 +86,7 @@ int			fill_new_t_game(t_game *g, char *path_to_map)
 		return (ERROR);
 	}
 	close(fd);
-	g->elem = (int*)malloc(sizeof(int) * g->rows);
+	g->elem = (int*)ft_memalloc(sizeof(int) * g->rows);
 	if (!(g->w_map = read_and_save_map(g->rows, path_to_map, g->elem)))
 	{
 		ft_putstr("Wrong file or file is broken\n");
@@ -99,7 +99,7 @@ t_game			*create_game(char *map_name)
 {
 	t_game		*g;
 
-	if (!(g = (t_game*)malloc(sizeof(t_game))))
+	if (!(g = (t_game*)ft_memalloc(sizeof(t_game))))
 		return (NULL);
 	g->rows = 0;
 	g->w_map = NULL;
@@ -133,7 +133,7 @@ t_player		*create_player(void)
 {
 	t_player	*p;
 
-	if (!(p = (t_player*)malloc(sizeof(t_player))))
+	if (!(p = (t_player*)ft_memalloc(sizeof(t_player))))
 		return (NULL);
 	if (fill_new_t_player(p) == ERROR)
 		return (NULL);

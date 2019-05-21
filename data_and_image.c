@@ -31,7 +31,7 @@ t_images		*new_t_images(void)
 	t_images	*i;
 	int			y;
 
-	i = (t_images*)malloc(sizeof(t_images));
+	i = (t_images*)ft_memalloc(sizeof(t_images));
 	i->surf = NULL;
 	y = 0;
 	while (y < CO_TEXT)
@@ -44,7 +44,6 @@ t_images		*create_and_images(char *file_list, SDL_Renderer *ren)
 	int			i;
 	int			fd;
 	char		*name;
-	char		*pref;
 	t_images	*img;
 
 	if ((fd = open(file_list, O_RDONLY)) < 1)
@@ -57,14 +56,11 @@ t_images		*create_and_images(char *file_list, SDL_Renderer *ren)
 	img = new_t_images();
 	while (get_next_line(fd, &name) > 0)
 	{
-		pref = ft_strjoin("res/", name);
-		if (!(img->walls[++i] = load_surface(ren, pref)))
+		if (!(img->walls[++i] = load_surface(ren, name)))
 			return (NULL);
-		ft_strdel(&pref);
 		ft_strdel(&name);
 	}
 	ft_strdel(&name);
-	ft_strdel(&pref);
 	return (img);
 }
 
@@ -72,7 +68,7 @@ t_data			*new_empty_data(void)
 {
 	t_data		*d;
 
-	if (!(d = (t_data*)malloc(sizeof(t_data))))
+	if (!(d = (t_data*)ft_memalloc(sizeof(t_data))))
 		return (NULL);
 	d->move.x = 0;
 	d->move.y = 0;

@@ -1,3 +1,3 @@
-menu/new_game.bmp
-menu/continue.bmp
-menu/quit.bmp
+res/menu/new_game.bmp
+res/menu/continue.bmp
+res/menu/quit.bmp

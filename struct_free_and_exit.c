@@ -6,7 +6,7 @@
 /*   By: tbujalo <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/14 19:10:44 by tbujalo           #+#    #+#             */
-/*   Updated: 2019/05/14 19:14:50 by tbujalo          ###   ########.fr       */
+/*   Updated: 2019/05/17 18:23:46 by tbujalo          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,12 +43,13 @@ int				close_all(t_sdl *s)
 	int			i;
 
 	i = 0;
-	if (s->win)
-		SDL_DestroyWindow(s->win);
+	SDL_DestroyRenderer(s->ren);
+	SDL_DestroyWindow(s->win);
 	if (s->img)
 	{
 		while (i < CO_TEXT && s->img->walls[i])
 			SDL_FreeSurface(s->img->walls[i++]);
+		SDL_FreeSurface(s->img->surf);
 		free(s->img);
 	}
 	i = 0;
@@ -62,6 +63,7 @@ int				close_all(t_sdl *s)
 	free(s->menu);
 	free(s);
 	SDL_Quit();
+	system("leaks -q wolf3d");
 	return (1);
 }
 

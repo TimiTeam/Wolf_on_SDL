@@ -4,25 +4,26 @@ SRCS = main.c struct_creator.c struct_free_and_exit.c game_loop.c map_worker.c d
 
 OBJS = $(SRCS:.c=.o)
 
-SDL_INCL = -I frameworks/SDL2.framework/Headers/ 
+SDL_INCL = -I frameworks/SDL2.framework/Headers/ -I framework/SDL2_image.framework/Headers/
 
-SDL_IMG_INCL = -I framework/SDL2_image.framework/Headers/
+FLAG_F = -F frameworks
 
 SDL_INCL_LINUX = `sdl2-config --cflags --libs`
 
-LFT_INCL = -I libft/ -L libft -lft
+LFT_INCL = -I libft/ 
 
 LIBFT_A = libft/libft.a
 
-SDL_RUN_FLAGS = -framework SDL2 -rpath frameworks
+SDL_RUN_FLAGS = -rpath frameworks -framework SDL2 -framework SDL2_mixer
 
 all: $(NAME)
 
 compile: $(SRCS) $(LIBFT_A)
-	clang -g -pthread $(SRCS) $(SDL_INCL) $(SDL_RUN_FLAGS) $(LFT_INCL) -o $(NAME)
+	clang -g -c -pthread $(SRCS) $(FLAG_F) $(SDL_INCL) $(LFT_INCL)
+	clang -g $(OBJS) $(FLAG_F) $(SDL_RUN_FLAGS) -L libft -lft -o $(NAME)
 
 compile_linux: $(SRCS) $(LIBFT_A)
-	clang -g -pthread $(SRCS) $(SDL_INCL_LINUX) $(LFT_INCL) -lm -o $(NAME)
+	clang -g  -pthread $(SRCS) $(SDL_INCL_LINUX) $(LFT_INCL) -lm -o $(NAME)
 
 compile_lib: libft/
 	make -C libft/

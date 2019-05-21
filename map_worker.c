@@ -36,7 +36,7 @@ static int		*get_size_and_save(char *line, int *size_row)
 	else
 		return (0);
 	*size_row = arr_size(ch_dost);
-	dots = (int*)malloc(sizeof(int) * *size_row);
+	dots = (int*)ft_memalloc(sizeof(int) * *size_row);
 	j = 0;
 	while (j < *size_row)
 	{
@@ -54,7 +54,7 @@ int				**read_and_save_map(int size, char *pth, int *rows_size)
 	int			fd;
 	int			i;
 
-	arr = (int**)malloc(sizeof(int*) * size);
+	arr = (int**)ft_memalloc(sizeof(int*) * size);
 	i = 0;
 	if ((fd = open(pth, O_RDONLY)) < 1)
 		return (NULL);

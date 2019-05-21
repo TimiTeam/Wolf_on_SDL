@@ -204,7 +204,6 @@ int				run_raycasting_threads(t_sdl *s, t_player *p, t_game *g)
 
 	step = s->win_size.x / THREADS - 1;
 	i = 0;
-	s->img->surf = SDL_CreateRGBSurface(0, s->win_size.x, s->win_size.y, 32, 0, 0 ,0, 255);
 	while (i < THREADS)
 	{
 		if (!(data[i] = create_and_fill(s, i * step, step)))
@@ -228,34 +227,34 @@ int				game_loop(t_sdl *s, t_player *p, t_game *g)
 {
 	SDL_Event	e;
 	SDL_Texture	*tex;
+	int			stop;
 
-	tex = NULL;
-	while(1)
+	stop = 0;
+	while(!stop)
 	{
 		s->start = clock();
 		run_raycasting_threads(s, p, g);
 		tex = SDL_CreateTextureFromSurface(s->ren, s->img->surf);
 		SDL_RenderCopy(s->ren, tex, NULL, NULL);
 		SDL_RenderPresent(s->ren);
-		SDL_FreeSurface(s->img->surf);
 		SDL_DestroyTexture(tex);
 		s->end = clock();
-		p->speed = (double)(s->end - s->start) / CLOCKS_PER_SEC * 3.0;
+		p->speed = (double)(s->end - s->start) / CLOCKS_PER_SEC * 4.5;
 		while (SDL_PollEvent(&e))
 		{
 			if (e.type == SDL_QUIT)
-				return (EXIT);
+				stop = EXIT;
 			else if (e.type == SDL_KEYDOWN)
 			{
 				if (e.key.keysym.sym == SDLK_ESCAPE)
-					return (EXIT);
+					stop = EXIT;
 				if (e.key.keysym.sym == SDLK_m)
-					return (MENU);
+					stop = MENU;
 				else
 					if(make_actions(e.key.keysym.sym, s, p, g) == NEW_GAME)
-						return (NEW_GAME);
+						stop = NEW_GAME;
 			}
 		}
 	}
-	return (1);
+	return (stop);
 }

@@ -72,6 +72,7 @@ int				init_sdl_elem(t_sdl *s)
 		return (ERROR);
 	if (!(s->img = create_and_images("res/res.txt", s->ren)))
 		return (ERROR);
+	s->img->surf = SDL_CreateRGBSurface(0, s->win_size.x, s->win_size.y, 32, 0, 0 ,0, 255);
 	if (!(s->menu = create_and_images("res/menu/list.txt", s->ren)))
 		return (ERROR);
 	if (!(s->maps = read_maps_path("maps/maps.txt")))
