@@ -8,9 +8,10 @@
 #include "libft.h"
 #include "pixel_worker.h"
 #include <SDL.h>
+#include "SDL_mixer.h"
 
 #define THREADS 4
-#define	CO_TEXT 15
+#define	CO_TEXT 18
 #define ERROR -1
 #define OK 0
 #define EXIT 1
@@ -54,6 +55,9 @@ typedef struct		s_player
 	t_cos_sin		plus;
 	t_cos_sin		minus;
 	double			speed;
+	Mix_Chunk		*step;
+	Mix_Chunk		*door;
+	int				play;
 }					t_player;
 
 typedef	struct		s_game
@@ -77,6 +81,9 @@ typedef	struct		s_sdl
 	t_point			win_size;
 	SDL_Window		*win;
 	SDL_Renderer	*ren;
+	Mix_Music		*music;
+	Mix_Chunk		*menu_move;
+	Mix_Chunk		*menu_select;
 	t_images		*img;
 	t_images		*menu;
 	char			**maps;
@@ -108,10 +115,10 @@ typedef struct		s_data
 	int				end_x;
 }					t_data;
 
-int				fill_new_t_game(t_game *g, char *path_to_map);
-int				fill_new_t_player(t_player *p);
+int					fill_new_t_game(t_game *g, char *path_to_map);
+int					fill_new_t_player(t_player *p);
 int					init_objects(t_sdl *s, t_player **p, t_game **g);
-int				new_clear_objects(t_sdl *s, t_player *p, t_game *g);
+int					new_clear_objects(t_sdl *s, t_player *p, t_game *g);
 t_sdl				*new_t_sdl(int s_x, int s_y);
 int 				**read_and_save_map(int size, char *pth, int *rows_size);
 t_player			*create_player();
@@ -119,6 +126,7 @@ t_game				*create_game(char *pth_to_map);
 t_data				*create_and_fill(t_sdl *s, int star_x, int step);
 t_images			*create_and_images(char *file_list, SDL_Renderer *ren);
 SDL_Surface			*load_surface(SDL_Renderer *ren, char *pth);
+Mix_Chunk			*load_effects(char *path);
 
 int					close_all(t_sdl *s);
 int 				destroy_game(t_game *g);

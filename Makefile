@@ -4,7 +4,7 @@ SRCS = main.c struct_creator.c struct_free_and_exit.c game_loop.c map_worker.c d
 
 OBJS = $(SRCS:.c=.o)
 
-SDL_INCL = -I frameworks/SDL2.framework/Headers/ -I framework/SDL2_image.framework/Headers/
+SDL_INCL = -I frameworks/SDL2.framework/Headers/ -I frameworks/SDL2_mixer.framework/Headers
 
 FLAG_F = -F frameworks
 

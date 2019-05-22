@@ -24,6 +24,7 @@ t_sdl			*new_t_sdl(int s_x, int s_y)
 	s->win = NULL;
 	s->ren = NULL;
 	s->img = NULL;
+	s->music = NULL;
 	s->map = 0;
 	s->maps = NULL;
 	s->in_game = 0;
@@ -137,5 +138,8 @@ t_player		*create_player(void)
 		return (NULL);
 	if (fill_new_t_player(p) == ERROR)
 		return (NULL);
+	p->step = load_effects("res/step.wav");
+	p->door = load_effects("res/closing door.wav");
+	p->play = 1;
 	return (p);
 }

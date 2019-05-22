@@ -8,8 +8,11 @@ res/eagle.bmp
 res/wall_three.bmp
 res/wall_three_shadow.bmp
 res/prison.bmp
+res/close_door.bmp
+res/fence.bmp
+res/gate.bmp
 res/cloud_sky.bmp
 res/wood.bmp
 res/colorstone.bmp
-res/clear_sky.bmp
+res/sky.bmp
 res/ground.bmp

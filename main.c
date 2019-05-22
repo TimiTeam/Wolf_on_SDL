@@ -30,6 +30,7 @@ int				main(int argc, char **argv)
 			ret = show_menu(sdl);
 		if (ret == NEW_GAME)
 		{
+			Mix_HaltMusic();
 			if (new_clear_objects(sdl, player, game) == ERROR)
 				return (1);
 		}

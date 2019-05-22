@@ -230,6 +230,10 @@ int				game_loop(t_sdl *s, t_player *p, t_game *g)
 	int			stop;
 
 	stop = 0;
+	if (Mix_PlayingMusic() == 0)
+		Mix_PlayMusic (s->music, -1);
+	else if (Mix_PausedMusic() == 1)
+		Mix_ResumeMusic();
 	while(!stop)
 	{
 		s->start = clock();
@@ -256,5 +260,6 @@ int				game_loop(t_sdl *s, t_player *p, t_game *g)
 			}
 		}
 	}
+	Mix_PauseMusic();
 	return (stop);
 }

@@ -24,6 +24,7 @@ static int			menu_hook(SDL_Keycode k, t_sdl *s, int *choice)
 {
 	if (k == SDLK_UP)
 	{
+		Mix_PlayChannel(-1, s->menu_move, 0);
 		--(*choice);
 		if (*choice < 0)
 			*choice = 2;
@@ -31,6 +32,7 @@ static int			menu_hook(SDL_Keycode k, t_sdl *s, int *choice)
 	}
 	else if (k == SDLK_DOWN)
 	{
+		Mix_PlayChannel(-1, s->menu_move, 0);
 		++(*choice);
 		if (*choice > 2)
 			*choice = 0;
@@ -38,6 +40,7 @@ static int			menu_hook(SDL_Keycode k, t_sdl *s, int *choice)
 	}
 	else if (k == SDLK_RETURN)
 	{
+		Mix_PlayChannel(-1, s->menu_select, 0);
 		if (*choice == 1 && s->in_game)
 			return (CONTINUE);
 		else if (*choice == 0)

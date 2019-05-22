@@ -61,7 +61,14 @@ int				close_all(t_sdl *s)
 	if (s->maps)
 		free(s->maps);
 	free(s->menu);
+	if (s->music)
+		Mix_FreeMusic(s->music);
+	if (s->menu_move)
+		Mix_FreeChunk(s->menu_move);
+	if (s->menu_select)
+		Mix_FreeChunk(s->menu_select);
 	free(s);
+	Mix_Quit();
 	SDL_Quit();
 	system("leaks -q wolf3d");
 	return (1);
@@ -72,7 +79,13 @@ int				exit_x(t_sdl *s, t_player *p, t_game *g)
 	if (g)
 		destroy_game(g);
 	if (p)
+	{
+		if (p->step)
+			Mix_FreeChunk(p->step);
+		if (p->door)
+			Mix_FreeChunk(p->door);
 		free(p);
+	}
 	if (s)
 		close_all(s);
 	return (ERROR);
