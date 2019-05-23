@@ -24,6 +24,7 @@ t_sdl			*new_t_sdl(int s_x, int s_y)
 	s->win = NULL;
 	s->ren = NULL;
 	s->img = NULL;
+	s->menu = NULL;
 	s->music = NULL;
 	s->map = 0;
 	s->maps = NULL;
@@ -71,12 +72,7 @@ int			fill_new_t_game(t_game *g, char *path_to_map)
 	int		fd;
 	if (!g)
 	{
-		ft_putstr("Need create t_game struct\n");
-		return (ERROR);
-	}
-	if (g->w_map)
-	{
-		ft_putstr("Map need to be crear\n");
+		ft_putendl("Need create t_game struct\n");
 		return (ERROR);
 	}
 	if (((fd = open(path_to_map, O_RDONLY)) < 1 ||
@@ -118,10 +114,10 @@ int			fill_new_t_player(t_player *p)
 {
 	if (!p)
 		return (ERROR);
-	p->dir.x = -1;
-	p->dir.y = 0;
-	p->plane.x = 0;
-	p->plane.y = 0.86;
+	p->dir.x = 0.305253;
+	p->dir.y = 0.952271;
+	p->plane.x = 0.818953;
+	p->plane.y = -0.262517;
 	p->plus.cos = cos(ROTATE);
 	p->plus.sin = sin(ROTATE);
 	p->minus.cos = cos(-ROTATE);

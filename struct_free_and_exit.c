@@ -45,31 +45,30 @@ int				close_all(t_sdl *s)
 	i = 0;
 	SDL_DestroyRenderer(s->ren);
 	SDL_DestroyWindow(s->win);
-	if (s->img)
+	clear_image(s->img);
+	i = 0;
+	if (s->menu)
 	{
-		while (i < CO_TEXT && s->img->walls[i])
-			SDL_FreeSurface(s->img->walls[i++]);
-		SDL_FreeSurface(s->img->surf);
-		free(s->img);
+		while (i < 3)
+			SDL_FreeSurface(s->menu->walls[i++]);
+		free(s->menu);
 	}
 	i = 0;
-	while (i < 3)
-		SDL_FreeSurface(s->menu->walls[i++]);
-	i = 0;
-	while (s->maps[i])
-		ft_strdel(&s->maps[i++]);
 	if (s->maps)
+	{
+		while (s->maps[i])
+			ft_strdel(&s->maps[i++]);
 		free(s->maps);
-	free(s->menu);
+	}
 	if (s->music)
 		Mix_FreeMusic(s->music);
 	if (s->menu_move)
 		Mix_FreeChunk(s->menu_move);
 	if (s->menu_select)
 		Mix_FreeChunk(s->menu_select);
-	free(s);
 	Mix_Quit();
 	SDL_Quit();
+	ft_memdel((void**)&s);
 	system("leaks -q wolf3d");
 	return (1);
 }

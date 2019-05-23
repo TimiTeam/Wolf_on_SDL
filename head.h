@@ -17,6 +17,7 @@
 #define EXIT 1
 #define NEW_GAME 2
 #define MENU 3
+#define THE_END 4
 #define CONTINUE 5
 #define ROTATE 0.171
 
@@ -71,7 +72,7 @@ typedef	struct		s_game
 
 typedef	struct		s_images
 {
-	SDL_Surface		*walls[CO_TEXT];
+	SDL_Surface		*walls[CO_TEXT + 1];
 	SDL_Surface		*surf;
 }					t_images;
 
@@ -128,6 +129,7 @@ t_images			*create_and_images(char *file_list, SDL_Renderer *ren);
 SDL_Surface			*load_surface(SDL_Renderer *ren, char *pth);
 Mix_Chunk			*load_effects(char *path);
 
+void 				clear_image(t_images *im);
 int					close_all(t_sdl *s);
 int 				destroy_game(t_game *g);
 int					exit_x(t_sdl *s, t_player *p, t_game *g);

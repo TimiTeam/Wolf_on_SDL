@@ -223,6 +223,21 @@ int				run_raycasting_threads(t_sdl *s, t_player *p, t_game *g)
 	return (OK);
 }
 
+int				the_end_screen(t_sdl *s)
+{
+	SDL_Texture	*tex;
+	SDL_Surface	*suf;
+
+	suf = load_surface(s->ren, "res/the_end.bmp");
+	tex = SDL_CreateTextureFromSurface(s->ren, suf);
+	SDL_RenderCopy(s->ren, tex, NULL, NULL);
+	SDL_RenderPresent(s->ren);
+	SDL_Delay(1200);
+	SDL_FreeSurface(suf);
+	SDL_DestroyTexture(tex);
+	return (EXIT);
+}
+
 int				game_loop(t_sdl *s, t_player *p, t_game *g)
 {
 	SDL_Event	e;
@@ -255,8 +270,13 @@ int				game_loop(t_sdl *s, t_player *p, t_game *g)
 				if (e.key.keysym.sym == SDLK_m)
 					stop = MENU;
 				else
-					if(make_actions(e.key.keysym.sym, s, p, g) == NEW_GAME)
-						stop = NEW_GAME;
+				{
+					if((stop = make_actions(e.key.keysym.sym, s, p, g)) != NEW_GAME 
+						&& stop != THE_END)
+							stop = 0;
+					if (stop == THE_END)
+						return (the_end_screen(s));
+				}
 			}
 		}
 	}

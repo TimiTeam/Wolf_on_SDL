@@ -11,8 +11,8 @@ res/prison.bmp
 res/close_door.bmp
 res/fence.bmp
 res/gate.bmp
-res/cloud_sky.bmp
+res/tree.bmp
+res/clear_sky.bmp
 res/wood.bmp
 res/colorstone.bmp
-res/sky.bmp
 res/ground.bmp

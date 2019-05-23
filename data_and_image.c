@@ -34,9 +34,23 @@ t_images		*new_t_images(void)
 	i = (t_images*)ft_memalloc(sizeof(t_images));
 	i->surf = NULL;
 	y = 0;
-	while (y < CO_TEXT)
+	while (y <= CO_TEXT)
 		i->walls[y++] = NULL;
 	return (i);
+}
+
+void 			clear_image(t_images *im)
+{
+	int			i;
+
+	if (!im)
+		return ;
+	i = 0;
+	while (im->walls[i])
+		SDL_FreeSurface(im->walls[i++]);
+	if (im->surf)
+		SDL_FreeSurface(im->surf);
+	free(im);
 }
 
 t_images		*create_and_images(char *file_list, SDL_Renderer *ren)
@@ -57,7 +71,11 @@ t_images		*create_and_images(char *file_list, SDL_Renderer *ren)
 	while (get_next_line(fd, &name) > 0)
 	{
 		if (!(img->walls[++i] = load_surface(ren, name)))
-			return (NULL);
+		{
+			clear_image(img);
+			img = NULL;
+			break ;
+		}
 		ft_strdel(&name);
 	}
 	ft_strdel(&name);

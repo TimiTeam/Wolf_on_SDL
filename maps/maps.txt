@@ -2,4 +2,4 @@ maps/map_one.txt
 maps/map_two.txt
 maps/map_three.txt
 maps/map_four.txt
-maps/lodev_map.txt
+maps/final_map.txt

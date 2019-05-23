@@ -37,24 +37,22 @@ static	int		key_up(SDL_Keycode k, t_sdl *s, t_player *p, t_game *g)
 			Mix_PlayChannel(-1, p->step, 0);
 			p->play = 0;
 		}
-		p->play++;
-		x = (int)(p->pos.x + p->dir.x * p->speed);
-		y = (int)(p->pos.y + p->dir.y * p->speed);
-		if (g->w_map[y][(int)p->pos.x] == 0)
-			p->pos.y += p->dir.y * p->speed;
-		else if (g->w_map[y][(int)p->pos.x] == 5)
+		else
+			p->play++;
+		x = (int)(p->pos.x + p->dir.x * (p->speed + 0.1));
+		y = (int)(p->pos.y + p->dir.y * (p->speed + 0.1));
+		if (g->w_map[y][x] == 5)
 		{
 			Mix_PlayChannel(-1, p->door, 0);
 			s->map++;
 			return (NEW_GAME);
 		}
+		else if (g->w_map[y][x] == 13)
+			return (THE_END);
+		if (g->w_map[y][(int)p->pos.x] == 0)
+			p->pos.y += p->dir.y * p->speed;
 		if (g->w_map[(int)p->pos.y][x] == 0)
 			p->pos.x += p->dir.x * p->speed;
-		else if (g->w_map[(int)p->pos.y][x] == 5)
-		{
-			s->map++;
-			return (NEW_GAME);
-		}
 	}
 	return (0);
 }
