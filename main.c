@@ -6,13 +6,13 @@
 /*   By: tbujalo <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/14 19:46:55 by tbujalo           #+#    #+#             */
-/*   Updated: 2019/05/14 19:47:05 by tbujalo          ###   ########.fr       */
+/*   Updated: 2019/05/24 17:53:11 by tbujalo          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "head.h"
 
-int				main(int argc, char **argv)
+int				main(void)
 {
 	int			ret;
 	t_sdl		*sdl;
@@ -37,6 +37,6 @@ int				main(int argc, char **argv)
 		if (ret != EXIT)
 			ret = game_loop(sdl, player, game);
 	}
-	exit_x (sdl, player, game);
+	exit_x(sdl, player, game);
 	return (0);
 }

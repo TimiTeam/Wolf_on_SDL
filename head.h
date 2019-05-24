@@ -1,25 +1,37 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   head.h                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: tbujalo <marvin@42.fr>                     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2019/05/24 19:18:52 by tbujalo           #+#    #+#             */
+/*   Updated: 2019/05/24 19:24:21 by tbujalo          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef __HEAD_H
-#define __HEAD_H
+# define __HEAD_H
 
-#include <fcntl.h>
-#include <pthread.h>
-#include <time.h>
-#include <math.h>
-#include "libft.h"
-#include "pixel_worker.h"
-#include <SDL.h>
-#include "SDL_mixer.h"
+# include <fcntl.h>
+# include <pthread.h>
+# include <time.h>
+# include <math.h>
+# include "libft.h"
+# include "pixel_worker.h"
+# include <SDL.h>
+# include "SDL_mixer.h"
 
-#define THREADS 4
-#define	CO_TEXT 18
-#define ERROR -1
-#define OK 0
-#define EXIT 1
-#define NEW_GAME 2
-#define MENU 3
-#define THE_END 4
-#define CONTINUE 5
-#define ROTATE 0.171
+# define THREADS 4
+# define CO_TEXT 18
+# define ERROR -1
+# define OK 0
+# define EXIT 1
+# define NEW_GAME 2
+# define MENU 3
+# define THE_END 4
+# define CONTINUE 5
+# define ROTATE 0.171
 
 typedef	struct		s_vec
 {
@@ -27,15 +39,15 @@ typedef	struct		s_vec
 	double			y;
 }					t_vec;
 
-typedef	struct 		s_distance
+typedef	struct		s_distance
 {
 	int				start;
-	int 			end;
+	int				end;
 }					t_distance;
 
 typedef	struct		s_cos_sin
 {
-	double 			cos;
+	double			cos;
 	double			sin;
 }					t_cos_sin;
 
@@ -75,7 +87,6 @@ typedef	struct		s_images
 	SDL_Surface		*walls[CO_TEXT + 1];
 	SDL_Surface		*surf;
 }					t_images;
-
 
 typedef	struct		s_sdl
 {
@@ -121,26 +132,32 @@ int					fill_new_t_player(t_player *p);
 int					init_objects(t_sdl *s, t_player **p, t_game **g);
 int					new_clear_objects(t_sdl *s, t_player *p, t_game *g);
 t_sdl				*new_t_sdl(int s_x, int s_y);
-int 				**read_and_save_map(int size, char *pth, int *rows_size);
+int					**read_and_save_map(int size, char *pth, int *rows_size);
 t_player			*create_player();
 t_game				*create_game(char *pth_to_map);
-t_data				*create_and_fill(t_sdl *s, int star_x, int step);
-t_images			*create_and_images(char *file_list, SDL_Renderer *ren);
-SDL_Surface			*load_surface(SDL_Renderer *ren, char *pth);
+void				create_and_fill(t_data *d, t_sdl *s, int star_x, int step);
+t_images			*create_and_images(char *file_list);
+SDL_Surface			*load_surface(char *pth);
 Mix_Chunk			*load_effects(char *path);
+Mix_Music			*load_music(char *path);
 
-void 				clear_image(t_images *im);
+void				clear_image(t_images *im);
 int					close_all(t_sdl *s);
-int 				destroy_game(t_game *g);
+int					destroy_game(t_game *g);
 int					exit_x(t_sdl *s, t_player *p, t_game *g);
-int 				error_message(char const *mes, t_sdl *s, t_player *p, t_game  *g);
-void 				free_void_map(void **map, int size);
-int 				arr_size(char **arr);
+int					error_message(char const *m, t_sdl *s,
+		t_player *p, t_game *g);
+void				free_void_map(void **map, int size);
+int					arr_size(char **arr);
 
-void 				find_free_place(t_game *g, t_vec *pos);
+void				find_free_place(t_game *g, t_vec *pos);
 int					game_loop(t_sdl *s, t_player *p, t_game *g);
-int					make_actions(SDL_Keycode k, t_sdl *s, t_player *p, t_game *g);
+void				*build_walls(void *param);
+void				draw_strip_of_wall(t_game *g, t_player *p, t_data *d);
+int					get_num_texture(t_data *d, int map_tex);
+int					make_actions(SDL_Keycode k, t_sdl *s,
+		t_player *p, t_game *g);
 int					show_menu(t_sdl *s);
-
+void				render_manipulations(SDL_Renderer *ren, SDL_Texture *tex);
 
 #endif

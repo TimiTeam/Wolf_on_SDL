@@ -12,6 +12,22 @@
 
 #include "head.h"
 
+void			free_void_map(void **map, int size)
+{
+	int			i;
+
+	i = 0;
+	if (!map)
+		return ;
+	while (i < size)
+	{
+		free(map[i]);
+		map[i++] = NULL;
+	}
+	free(map);
+	map[i] = NULL;
+}
+
 int				arr_size(char **arr)
 {
 	int			s;
@@ -21,7 +37,6 @@ int				arr_size(char **arr)
 		s++;
 	return (s);
 }
-
 
 static int		*get_size_and_save(char *line, int *size_row)
 {

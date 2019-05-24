@@ -6,7 +6,7 @@
 /*   By: tbujalo <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/14 18:43:09 by tbujalo           #+#    #+#             */
-/*   Updated: 2019/05/14 18:48:28 by tbujalo          ###   ########.fr       */
+/*   Updated: 2019/05/24 17:36:59 by tbujalo          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,12 @@ static void		rotate_player(t_player *p, t_cos_sin cos_sin)
 	p->plane.y = old_plane_x * cos_sin.sin + p->plane.y * cos_sin.cos;
 }
 
+static void		play_music(int *incr, Mix_Chunk *eff)
+{
+	Mix_PlayChannel(-1, eff, 0);
+	*incr = 0;
+}
+
 static	int		key_up(SDL_Keycode k, t_sdl *s, t_player *p, t_game *g)
 {
 	int			x;
@@ -33,10 +39,7 @@ static	int		key_up(SDL_Keycode k, t_sdl *s, t_player *p, t_game *g)
 	if (k == SDLK_UP)
 	{
 		if (p->play == 5)
-		{
-			Mix_PlayChannel(-1, p->step, 0);
-			p->play = 0;
-		}
+			play_music(&p->play, p->step);
 		else
 			p->play++;
 		x = (int)(p->pos.x + p->dir.x * (p->speed + 0.1));

@@ -6,27 +6,27 @@
 /*   By: tbujalo <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/14 19:10:44 by tbujalo           #+#    #+#             */
-/*   Updated: 2019/05/17 18:23:46 by tbujalo          ###   ########.fr       */
+/*   Updated: 2019/05/24 18:11:41 by tbujalo          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "head.h"
 
-void			free_void_map(void **map, int size)
+void		clear_image(t_images *im)
 {
-	int			i;
+	int		i;
 
+	if (!im)
+		return ;
 	i = 0;
-	while (i < size)
-	{
-		free(map[i]);
-		map[i++] = NULL;
-	}
-	free(map);
-	map[i] = NULL;
+	while (im->walls[i])
+		SDL_FreeSurface(im->walls[i++]);
+	if (im->surf)
+		SDL_FreeSurface(im->surf);
+	free(im);
 }
 
-int				destroy_game(t_game *g)
+int			destroy_game(t_game *g)
 {
 	if (g->w_map)
 		free_void_map((void**)g->w_map, g->rows);
@@ -38,22 +38,15 @@ int				destroy_game(t_game *g)
 	return (OK);
 }
 
-int				close_all(t_sdl *s)
+int			close_all(t_sdl *s)
 {
-	int			i;
+	int		i;
 
 	i = 0;
 	SDL_DestroyRenderer(s->ren);
 	SDL_DestroyWindow(s->win);
 	clear_image(s->img);
-	i = 0;
-	if (s->menu)
-	{
-		while (i < 3)
-			SDL_FreeSurface(s->menu->walls[i++]);
-		free(s->menu);
-	}
-	i = 0;
+	clear_image(s->menu);
 	if (s->maps)
 	{
 		while (s->maps[i])
@@ -73,7 +66,7 @@ int				close_all(t_sdl *s)
 	return (1);
 }
 
-int				exit_x(t_sdl *s, t_player *p, t_game *g)
+int			exit_x(t_sdl *s, t_player *p, t_game *g)
 {
 	if (g)
 		destroy_game(g);
@@ -90,12 +83,12 @@ int				exit_x(t_sdl *s, t_player *p, t_game *g)
 	return (ERROR);
 }
 
-int				error_message(char const *mess, t_sdl *s, t_player *p, t_game *g)
+int			error_message(char const *m, t_sdl *s, t_player *p, t_game *g)
 {
-	if (mess)
+	if (m)
 	{
 		ft_putstr("ERROR: ");
-		ft_putendl(mess);
+		ft_putendl(m);
 	}
 	exit_x(s, p, g);
 	return (ERROR);
