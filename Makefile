@@ -22,31 +22,32 @@ LIBFT_A = libft/libft.a
 
 SDL_RUN_FLAGS = -rpath frameworks -framework SDL2 -framework SDL2_mixer
 
-$(OBJS):
-	clang $(FLAG_W) -g -c -pthread $(addprefix $(DIR_SRC), $(SRCS)) $(FLAG_F) $(SDL_INCL) $(LFT_INCL)
-	mkdir -p obj
-	mv $(OBJ) $(DIR_OBJ)
-
 all: $(NAME)
 
-compile: $(OBJ) $(LIBFT_A)
-	#clang $(FLAG_W) -g -c -pthread $(SRCS) $(FLAG_F) $(SDL_INCL) $(LFT_INCL)
-	clang -g $(addprefix $(DIR_SRC),$(OBJS)) $(FLAG_F) $(SDL_RUN_FLAGS) -L libft -lft -o $(NAME)
-
-compile_linux: $(SRCS) $(LIBFT_A)
-	clang -g  -pthread $(SRCS) $(SDL_INCL_LINUX) $(LFT_INCL) -lm -o $(NAME)
-
-compile_lib: libft/
+$(LIBFT_A):
 	make -C libft/
 
-$(NAME): compile_lib compile
+$(NAME): $(LIBFT_A)
+	clang $(FLAG_W) -g -c -pthread $(addprefix $(DIR_SRC), $(SRCS)) $(FLAG_F) $(SDL_INCL) $(LFT_INCL)
+	mkdir -p $(DIR_OBJ)
+	mv $(OBJS) $(DIR_OBJ)
+	clang -g $(addprefix $(DIR_OBJ),$(OBJS)) $(FLAG_F) $(SDL_RUN_FLAGS) -L libft -lft -o $(NAME)
+
+compile_linux: $(LIBFT_A)
+	clang $(FLAG_W) -g -c -pthread $(addprefix $(DIR_SRC), $(SRCS)) $(FLAG_F) $(SDL_INCL) $(LFT_INCL)
+	mkdir -p $(DIR_OBJ)
+	mv $(OBJS) $(DIR_OBJ)
+	clang -g $(SRCS) $(SDL_INCL_LINUX) $(LFT_INCL) -lm -o $(NAME)
 
 clean:
 	make -C libft/ clean
-	/bin/rm -f $(OBJS)
+	/bin/rm -rf $(addprefix $(DIR_OBJ),$(OBJS))
+	/bin/rm -rf $(DIR_OBJ)
 
 fclean: clean
 	make -C libft/ fclean
-	/bin/rm -f $(NAME)
+	/bin/rm -rf $(NAME)
 
 re: fclean all 
+
+.PHONY: all fclean clean re

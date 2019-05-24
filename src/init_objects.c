@@ -100,7 +100,7 @@ int				new_clear_objects(t_sdl *s, t_player *p, t_game *g)
 	g->elem = NULL;
 	s->map = s->map >= s->count_maps ? 0 : s->map;
 	if (fill_new_t_game(g, s->maps[s->map]) == ERROR)
-		error_message("Can't create Game", s, p, g);
+		return (error_message("Can't create Game", s, p, g));
 	g->floor = s->map == s->count_maps - 1 ? CO_TEXT - 1 : CO_TEXT - 2;
 	g->ceiling = s->map == s->count_maps - 1 ? CO_TEXT - 4 : CO_TEXT - 3;
 	fill_new_t_player(p);

@@ -62,7 +62,6 @@ int			close_all(t_sdl *s)
 	Mix_Quit();
 	SDL_Quit();
 	ft_memdel((void**)&s);
-	system("leaks -q wolf3d");
 	return (1);
 }
 
@@ -90,6 +89,5 @@ int			error_message(char const *m, t_sdl *s, t_player *p, t_game *g)
 		ft_putstr("ERROR: ");
 		ft_putendl(m);
 	}
-	exit_x(s, p, g);
-	return (ERROR);
+	return (exit_x(s, p, g));
 }
