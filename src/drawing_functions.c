@@ -102,7 +102,7 @@ void			draw_strip_of_wall(t_game *g, t_player *p, t_data *d)
 	dist.start = dist.start < 0 ? 0 : dist.start;
 	dist.end = d->half_wall_size + d->half_win_y;
 	dist.end = dist.end >= d->win_size.y ? d->win_size.y : dist.end;
-	d->num_tex = get_num_texture(d, g->w_map[d->move.y][d->move.x] - 1);
+	d->num_tex = get_num_texture(d, g->w_map[d->move.x][d->move.y] - 1);
 	tr.dst_surf = d->img->surf;
 	tr.dst_point.x = d->start_x;
 	tr.dis.start = 0;

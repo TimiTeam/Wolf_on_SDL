@@ -51,6 +51,7 @@ int				get_map_size(int fd)
 	int			s;
 
 	s = 0;
+	line = NULL;
 	while (get_next_line(fd, &line) > 0)
 	{
 		s++;
@@ -61,8 +62,10 @@ int				get_map_size(int fd)
 		}
 		ft_strdel(&line);
 	}
-	if (line)
+	if (s > 0)
 		ft_strdel(&line);
+	else
+		return (map_error("Empty map"));
 	return (s);
 }
 
@@ -71,24 +74,19 @@ int				fill_new_t_game(t_game *g, char *path_to_map)
 	int			fd;
 
 	if (!g)
-	{
-		ft_putendl("Need create t_game struct\n");
 		return (ERROR);
-	}
 	if (((fd = open(path_to_map, O_RDONLY)) < 1 ||
 			(g->rows = get_map_size(fd)) == ERROR))
-	{
-		ft_putstr("File not found: ");
-		ft_putendl(path_to_map);
 		return (ERROR);
-	}
 	close(fd);
 	g->elem = (int*)ft_memalloc(sizeof(int) * g->rows);
-	if (!(g->w_map = read_and_save_map(g->rows, path_to_map, g->elem)))
+	if ((g->w_map = read_and_save_map(g->rows, path_to_map, g->elem)))
 	{
-		ft_putstr("Wrong file or file is broken\n");
-		return (ERROR);
+		if (valid_map(g->w_map, g->rows, g->elem) == ERROR)
+			return (map_error("Map error"));
 	}
+	else
+		return (map_error("Wrong file or file is broken"));
 	return (OK);
 }
 

@@ -28,7 +28,7 @@ static void		calculate_strip_wall(t_player *p, t_game *game, t_data *d)
 			d->move.y += d->step.y;
 			d->side = 1;
 		}
-		if (game->w_map[d->move.y][d->move.x] > 0)
+		if (game->w_map[d->move.x][d->move.y] > 0)
 			break ;
 	}
 	if (d->side)

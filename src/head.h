@@ -22,6 +22,9 @@
 # include <SDL.h>
 # include "SDL_mixer.h"
 
+# define RES_IMG "res/res.txt"
+# define RES_MENU "res/menu/list.txt"
+# define RES_MAPS "maps/maps.txt"
 # define THREADS 4
 # define CO_TEXT 18
 # define ERROR -1
@@ -136,6 +139,7 @@ int					**read_and_save_map(int size, char *pth, int *rows_size);
 t_player			*create_player();
 t_game				*create_game(char *pth_to_map);
 void				create_and_fill(t_data *d, t_sdl *s, int star_x, int step);
+int					valid_map(int **map, int size, int *rows_size);
 t_images			*create_and_images(char *file_list);
 SDL_Surface			*load_surface(char *pth);
 Mix_Chunk			*load_effects(char *path);
@@ -147,6 +151,7 @@ int					destroy_game(t_game *g);
 int					exit_x(t_sdl *s, t_player *p, t_game *g);
 int					error_message(char const *m, t_sdl *s,
 		t_player *p, t_game *g);
+int					map_error(char *mes);
 void				free_void_map(void **map, int size);
 int					arr_size(char **arr);
 
