@@ -1,6 +1,6 @@
 NAME = wolf3d
 
-SRCS = main.c struct_creator.c struct_free_and_exit.c game_loop.c map_worker.c data_and_image.c pixel_worker.c actions.c init_objects.c menu.c player.c load_sound.c texture_choice.c drawing_functions.c calculate_wall.c
+SRCS = main.c struct_creator.c struct_free_and_exit.c game_loop.c map_worker.c data_and_image.c pixel_worker.c actions.c init_objects.c menu.c player.c load_sound.c texture_choice.c drawing_functions.c calculate_wall.c map_validator.c
 
 OBJS = $(SRCS:.c=.o)
 
@@ -32,12 +32,6 @@ $(NAME): $(LIBFT_A)
 	mkdir -p $(DIR_OBJ)
 	mv $(OBJS) $(DIR_OBJ)
 	clang -g $(addprefix $(DIR_OBJ),$(OBJS)) $(FLAG_F) $(SDL_RUN_FLAGS) -L libft -lft -o $(NAME)
-
-compile_linux: $(LIBFT_A)
-	clang $(FLAG_W) -g -c -pthread $(addprefix $(DIR_SRC), $(SRCS)) $(FLAG_F) $(SDL_INCL) $(LFT_INCL)
-	mkdir -p $(DIR_OBJ)
-	mv $(OBJS) $(DIR_OBJ)
-	clang -g $(SRCS) $(SDL_INCL_LINUX) $(LFT_INCL) -lm -o $(NAME)
 
 clean:
 	make -C libft/ clean
