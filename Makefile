@@ -1,20 +1,27 @@
-NAME = wolf3d
+NAME := wolf3d
 
-SRCS = main.c struct_creator.c struct_free_and_exit.c game_loop.c map_worker.c data_and_image.c pixel_worker.c actions.c init_objects.c menu.c player.c load_sound.c texture_choice.c drawing_functions.c calculate_wall.c map_validator.c
+SRCS	:=	main.c struct_creator.c struct_free_and_exit.c game_loop.c \
+			map_worker.c data_and_image.c pixel_worker.c actions.c init_objects.c \
+			menu.c player.c load_sound.c texture_choice.c drawing_functions.c \
+			calculate_wall.c map_validator.c
 
-OBJS = $(SRCS:.c=.o)
+DIR_SRC := $(CURDIR)/src
+DIR_OBJ := $(CURDIR)/obj
 
-DIR_SRC = ./src/
 
-DIR_OBJ = ./obj/
+OBJS := $(SRCS:.c=.o)
 
-SDL_INCL = -I frameworks/SDL2.framework/Headers/ -I frameworks/SDL2_mixer.framework/Headers
+OBJS := $(addprefix $(DIR_OBJ)/, $(OBJS))
+SRCS := $(addprefix $(DIR_SRC)/, $(SRCS))
+
+CC := clang
+
+SDL_INCL =	-I $(CURDIR)/frameworks/SDL2.framework/Headers/ \
+			-I $(CURDIR)/frameworks/SDL2_mixer.framework/Headers
 
 FLAG_W = -Wall -Wextra -Werror
 
 FLAG_F = -F frameworks
-
-SDL_INCL_LINUX = `sdl2-config --cflags --libs`
 
 LFT_INCL = -I libft/ 
 
@@ -25,21 +32,25 @@ SDL_RUN_FLAGS = -rpath frameworks -framework SDL2 -framework SDL2_mixer
 all: $(NAME)
 
 $(LIBFT_A):
-	make -C libft/
+	@make -C libft/
 
-$(NAME): $(LIBFT_A)
-	clang $(FLAG_W) -g -c -pthread $(addprefix $(DIR_SRC), $(SRCS)) $(FLAG_F) $(SDL_INCL) $(LFT_INCL)
-	mkdir -p $(DIR_OBJ)
-	mv $(OBJS) $(DIR_OBJ)
-	clang -g $(addprefix $(DIR_OBJ),$(OBJS)) $(FLAG_F) $(SDL_RUN_FLAGS) -L libft -lft -o $(NAME)
+$(DIR_OBJ):
+	@mkdir -p $(DIR_OBJ)
+
+$(NAME): $(LIBFT_A) $(OBJS)
+	$(CC) $(OBJS) $(FLAG_F) $(SDL_RUN_FLAGS) -L libft -lft -o $(NAME)
+
+
+$(DIR_OBJ)/%.o: $(DIR_SRC)/%.c | $(DIR_OBJ)
+	$(CC) $(FLAG_W) -pthread  $(FLAG_F) $(SDL_INCL) $(LFT_INCL) -c $< -o $@
 
 clean:
-	make -C libft/ clean
-	/bin/rm -rf $(addprefix $(DIR_OBJ),$(OBJS))
+	@make -C libft/ clean
+	/bin/rm -rf $(OBJS)
 	/bin/rm -rf $(DIR_OBJ)
 
 fclean: clean
-	make -C libft/ fclean
+	@make -C libft/ fclean
 	/bin/rm -rf $(NAME)
 
 re: fclean all 
