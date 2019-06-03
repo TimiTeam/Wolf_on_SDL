@@ -1,5 +1,7 @@
 NAME := wolf3d
 
+UNAME := $(shell uname)
+
 SRCS	:=	main.c struct_creator.c struct_free_and_exit.c game_loop.c \
 			map_worker.c data_and_image.c pixel_worker.c actions.c init_objects.c \
 			menu.c player.c load_sound.c texture_choice.c drawing_functions.c \
@@ -27,7 +29,23 @@ LFT_INCL = -I libft/
 
 LIBFT_A = libft/libft.a
 
+LIBFT_FLAGS = -L libft -lft
+
 SDL_RUN_FLAGS = -rpath frameworks -framework SDL2 -framework SDL2_mixer
+
+LINUX_FLAG = 
+
+ifeq ($(UNAME), Linux)
+
+SDL_INCL = -I/usr/local/include/SDL2 -I/usr/include/SDL2 
+
+SDL_RUN_FLAGS = -lSDL2_mixer -lSDL2
+
+LINUX_FLAG = -lm -lpthread 
+
+CC = gcc
+
+endif
 
 all: $(NAME)
 
@@ -38,7 +56,7 @@ $(DIR_OBJ):
 	@mkdir -p $(DIR_OBJ)
 
 $(NAME): $(LIBFT_A) $(OBJS)
-	$(CC) $(OBJS) $(FLAG_F) $(SDL_RUN_FLAGS) -L libft -lft -o $(NAME)
+	$(CC) $(OBJS) $(FLAG_F) $(SDL_RUN_FLAGS) $(LIBFT_FLAGS) $(LINUX_FLAG) -o $(NAME)
 
 
 $(DIR_OBJ)/%.o: $(DIR_SRC)/%.c | $(DIR_OBJ)
