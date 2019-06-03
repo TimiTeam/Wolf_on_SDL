@@ -17,6 +17,8 @@ int		make_line(char *from, char **line)
 	int		size;
 
 	size = 0;
+	if (!from)
+		return (-1);
 	while (from[size] != '\n' && from[size] != '\0')
 		size++;
 	if (!(*line = ft_strsub(from, 0, size)))

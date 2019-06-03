@@ -65,7 +65,10 @@ int				get_map_size(int fd)
 	if (s > 0)
 		ft_strdel(&line);
 	else
+	{
+		ft_strdel(&line);
 		return (map_error("Empty map"));
+	}
 	return (s);
 }
 
