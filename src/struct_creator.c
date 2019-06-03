@@ -77,7 +77,7 @@ int				fill_new_t_game(t_game *g, char *path_to_map)
 		return (ERROR);
 	if (((fd = open(path_to_map, O_RDONLY)) < 1 ||
 			(g->rows = get_map_size(fd)) == ERROR))
-		return (ERROR);
+		return (not_found(path_to_map));
 	close(fd);
 	g->elem = (int*)ft_memalloc(sizeof(int) * g->rows);
 	if ((g->w_map = read_and_save_map(g->rows, path_to_map, g->elem)))

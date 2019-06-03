@@ -25,6 +25,7 @@
 # define RES_IMG "res/res.txt"
 # define RES_MENU "res/menu/list.txt"
 # define RES_MAPS "maps/maps.txt"
+# define COUNT_MAPS 5
 # define THREADS 4
 # define CO_TEXT 18
 # define ERROR -1
@@ -140,6 +141,8 @@ t_player			*create_player();
 t_game				*create_game(char *pth_to_map);
 void				create_and_fill(t_data *d, t_sdl *s, int star_x, int step);
 int					valid_map(int **map, int size, int *rows_size);
+int					arr_size(char **arr);
+int					not_found(char *mess);
 t_images			*create_and_images(char *file_list);
 SDL_Surface			*load_surface(char *pth);
 Mix_Chunk			*load_effects(char *path);
@@ -153,7 +156,6 @@ int					error_message(char const *m, t_sdl *s,
 		t_player *p, t_game *g);
 int					map_error(char *mes);
 void				free_void_map(void **map, int size);
-int					arr_size(char **arr);
 
 void				find_free_place(t_game *g, t_vec *pos);
 int					game_loop(t_sdl *s, t_player *p, t_game *g);

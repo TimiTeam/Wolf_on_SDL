@@ -79,6 +79,7 @@ int			exit_x(t_sdl *s, t_player *p, t_game *g)
 	}
 	if (s)
 		close_all(s);
+	system("leaks -q wolf3d");
 	return (ERROR);
 }
 

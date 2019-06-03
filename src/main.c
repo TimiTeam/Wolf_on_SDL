@@ -19,6 +19,14 @@ int				not_found(char *mess)
 	return (ERROR);
 }
 
+int				close_exit(char **line, int fd)
+{
+	not_found(*line);
+	ft_strdel(&(*line));
+	close(fd);
+	return (ERROR);
+}
+
 int				opening_resources(int file, char *name)
 {
 	char		*line;
@@ -29,17 +37,15 @@ int				opening_resources(int file, char *name)
 	while (get_next_line(file, &line) > 0)
 	{
 		if ((fd = open(line, O_RDONLY)) < 1)
-		{
-			not_found(line);
-			ft_strdel(&line);
-			return (ERROR);
-		}
+			return (close_exit(&line, fd));
 		i++;
 		close(fd);
 		ft_strdel(&line);
 	}
 	if (!ft_strcmp(name, RES_IMG) && i != CO_TEXT)
 		return (map_error("Missing textures"));
+	else if (!ft_strcmp(name, RES_MAPS) && i != COUNT_MAPS)
+		return (map_error("Wrong count of the maps"));
 	return (OK);
 }
 

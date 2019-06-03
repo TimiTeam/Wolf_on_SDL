@@ -57,7 +57,7 @@ int				init_sdl_elem(t_sdl *s)
 	flag = SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC;
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0)
 		return (ERROR);
-	s->win = SDL_CreateWindow("test_sdl_wolf", SDL_WINDOWPOS_CENTERED,
+	s->win = SDL_CreateWindow("wolf3d", SDL_WINDOWPOS_CENTERED,
 		SDL_WINDOWPOS_CENTERED, s->win_size.x, s->win_size.y, SDL_WINDOW_SHOWN);
 	if (!s->win)
 		return (ERROR);
@@ -72,7 +72,7 @@ int				init_sdl_elem(t_sdl *s)
 	if (load_data(s) == ERROR)
 		return (ERROR);
 	s->menu->surf = NULL;
-	return (0);
+	return (OK);
 }
 
 int				init_objects(t_sdl *s, t_player **p, t_game **g)
