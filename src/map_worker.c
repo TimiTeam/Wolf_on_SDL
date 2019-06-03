@@ -69,10 +69,10 @@ int				**read_and_save_map(int size, char *pth, int *rows_size)
 	int			fd;
 	int			i;
 
-	arr = (int**)ft_memalloc(sizeof(int*) * size);
 	i = 0;
 	if ((fd = open(pth, O_RDONLY)) < 1)
 		return (NULL);
+	arr = (int**)ft_memalloc(sizeof(int*) * size);
 	while (get_next_line(fd, &line) > 0)
 	{
 		arr[i] = get_size_and_save(line, &rows_size[i]);
